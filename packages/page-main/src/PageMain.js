@@ -3,14 +3,22 @@
 /* eslint-disable no-console */
 
 import { html, css, LitElement } from 'lit-element';
+
 import 'shufflejs/dist/shuffle.js';
+import '@polymer/paper-checkbox/paper-checkbox.js';
+import '@polymer/paper-input/paper-input.js';
+import '@polymer/paper-toggle-button/paper-toggle-button.js';
+
 import '../../bob-card/bob-card.js';
 
 export class PageMain extends LitElement {
   static get styles() {
     return css`
+      a[selected] {
+        color: blue;
+      }
+
       .shuffle {
-        margin-top: 4rem;
         height: auto;
       }
 
@@ -25,11 +33,11 @@ export class PageMain extends LitElement {
         width: 8.33333%;
       }
 
-      a[selected] {
-        color: blue;
-      }
-
       @media screen and (min-width: 769px) {
+        .filters {
+          padding: 2rem;
+        }
+
         .shuffle__item {
           width: 33%;
         }
@@ -54,16 +62,27 @@ export class PageMain extends LitElement {
   }
 
   render() {
-    let userPostcode;
+    let userPostcodeFilter;
+    let userStateFilter;
     let businesses;
 
-    // address block
     if (this.userAddress) {
-      userPostcode = html `
+      userPostcodeFilter = html `
         <p>
           <label>
-            <input type="checkbox" @change="${(event) => {this.filterPostCode(this.userAddress.address.postcode, event); }}" />
+            <paper-toggle-button @change="${(event) => {this.filterPostCode(this.userAddress.address.postcode, event); }}"></paper-toggle-button>
             Only show businesses in ${this.userAddress.address.postcode}.
+          </label>
+        </p>
+      `;
+    }
+
+    if (this.userAddress) {
+      userStateFilter = html `
+        <p>
+          <label>
+          <paper-toggle-button checked @change="${(event) => {this.filterState(this.userAddress.address.state, event); }}"></paper-toggle-button>
+          Only show businesses in ${this.userAddress.address.state}.
           </label>
         </p>
       `;
@@ -73,13 +92,11 @@ export class PageMain extends LitElement {
       businesses = this.businesses.map((business) => {
         const categories = this.getCatArray(business.acf.categories);
 
-        console.log('business', business);
-
         return html `
           <figure
             class="shuffle__item"
+            title="${business.title.rendered}"
             data-groups="${categories}"
-            data-title="${business.title.rendered}"
             data-city="${business.acf.city}"
             data-state="${business.acf.state.name}"
             data-postcode="${business.acf.zip}">
@@ -100,54 +117,25 @@ export class PageMain extends LitElement {
     }
 
     return html`
-      <nav class="filters">
-        Category Select:
-        <a tabindex="0" ?selected="${this.catFilters.indexOf('restaurant') > -1}" @click="${() => {this.filterCategory('restaurant');}}">Restaurant</a>
-        <a tabindex="0" ?selected="${this.catFilters.indexOf('city') > -1}" @click="${() => {this.filterCategory('city');}}">City</a>
-        <a tabindex="0" ?selected="${this.catFilters.indexOf('nature') > -1}" @click="${() => {this.filterCategory('nature');}}">Nature</a>
-      </nav>
+      <section class="filters">
 
-      ${userPostcode}
+        <paper-input @keyup="${(event) => {this.filterTitle(event)}}" placeholder="Search for a business by name."></paper-input>
 
-      <input type="text" @keyup="${(event) => {this.filterTitle(event)}}" />
+        <div>Select a Category</div>
+        <nav class="filters__category">
+          <a tabindex="0" ?selected="${this.catFilters.indexOf('restaurant') > -1}" @click="${() => {this.filterCategory('restaurant');}}">Restaurant</a>
+          <a tabindex="0" ?selected="${this.catFilters.indexOf('city') > -1}" @click="${() => {this.filterCategory('city');}}">City</a>
+          <a tabindex="0" ?selected="${this.catFilters.indexOf('nature') > -1}" @click="${() => {this.filterCategory('nature');}}">Nature</a>
+        </nav>
 
-      <div class="shuffle">
+        ${userPostcodeFilter}
+        ${userStateFilter}
+
+      </section>
+
+      <section class="shuffle">
         ${businesses}
-        <!--
-        <figure class="shuffle__item" data-groups='["animal"]' data-date-created="2016-08-12" data-title="Crocodile" data-postcode="48075">
-          <bob-card
-            name="Kuzzos"
-            image="https://www.greenmangaming.com/newsroom/wp-content/uploads/2019/05/ff7-remake-blog.jpg"
-            address="555 street"
-            city="City"
-            state="State"
-            zip="99999"
-            phone="555-555-555"
-            website="www.website.com"
-            facebook="facebook.com">
-          </bob-card>
-        </figure>
-        <figure class="shuffle__item" data-groups='["city"]' data-date-created="2016-06-09" data-title="Crossroads" data-postcode="48076">
-          <bob-card
-            title="Crossroads"
-            description="A multi-level highway stack interchange in Puxi, Shanghai">
-          </bob-card>
-        </figure>
-        <figure class="shuffle__item" data-groups='["nature"]' data-date-created="2015-10-20" data-title="Central Park" data-postcode="48077">
-          <bob-card
-            title="Central Park"
-            description="Looking down on central park and the surrounding builds from the Rockefellar Center">
-          </bob-card>
-        </figure>
-        <figure class="shuffle__item" data-groups='["animal"]' data-date-created="2015-10-20" data-title="Central Park" data-postcode="48219">
-          <bob-card
-            title="Cat"
-            description="Enuff said.">
-          </bob-card>
-        </figure>
-        <div class="shuffle__sizer"></div>
-        -->
-      </div>
+      </section>
     `;
   }
 
@@ -167,6 +155,7 @@ export class PageMain extends LitElement {
   updated() {
     this.shuffleInstance.resetItems();
     this.shuffleInstance.update();
+    if (this.userAddress) this.filterState(this.userAddress.address.state, null, true);
   }
 
   getCatArray(catObject) {
@@ -190,12 +179,24 @@ export class PageMain extends LitElement {
     });
   }
 
+  filterState(state, event, checked) {
+    this.shuffleInstance.filter((element) => {
+      const userChecked = event ? event.path[0].checked : false;
+
+      if (userChecked || checked) {
+        return element.getAttribute('data-state') === state;
+      }
+
+      return true;
+    })
+  }
+
   filterTitle(event) {
     const searchText = event.target.value.toLowerCase();
 
     this.shuffleInstance.filter((element) => {
       const titleElement = element.querySelector('bob-card');
-      const titleText = titleElement.getAttribute('title').toLowerCase();
+      const titleText = titleElement.getAttribute('name').toLowerCase();
 
       return titleText.indexOf(searchText) !== -1;
     });

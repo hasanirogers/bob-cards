@@ -5,6 +5,7 @@ import { LitElement, html, css } from 'lit-element';
 import { installMediaQueryWatcher } from 'pwa-helpers/media-query.js';
 import { Router } from '@vaadin/router';
 import '@vaadin/vaadin-tabs/vaadin-tabs.js';
+import '@polymer/paper-input/paper-input.js';
 
 import '../../page-main/page-main.js';
 import '../../page-one/page-one.js';
@@ -15,7 +16,17 @@ export class BobApp extends LitElement {
   static get styles() {
     return [
       css`
+        vaadin-tabs {
+          border-bottom: 1px solid #404040;
+        }
 
+        vaadin-tab {
+          color: var(--bob-primary-text-color);
+        }
+
+        vaadin-tab[selected] {
+          color: var(--bob-primary-color);
+        }
       `,
     ];
   }
@@ -41,10 +52,18 @@ export class BobApp extends LitElement {
 
   render() {
     return html`
+      <header>
+        <div>Business Cards</div>
+        <div>
+          <paper-input @keyup="${(event) => {this.filterTitle(event)}}" placeholder="Search for a business by name."></paper-input>
+        </div>
+      </header>
+
       <vaadin-tabs orientation="horizontal" selected="${this.tabs.indexOf(this.page)}" theme="centered">
         <vaadin-tab @click=${() => this.switchRoute('')}>Main</vaadin-tab>
         <vaadin-tab @click=${() => this.switchRoute('one')}>One</vaadin-tab>
       </vaadin-tabs>
+
       <main>
         <section id="outlet"></section>
       </main>

@@ -6,15 +6,48 @@
   <meta name="Description" content="Put your description here.">
   <base href="/">
 
+  <link href="https://fonts.googleapis.com/css?family=Lato&display=swap" rel="stylesheet">
   <style>
     html, body {
+      /* bob colors */
+      --bob-primary-background-color: #1e1e1e;
+      --bob-primary-text-color: #858585;
+      --bob-primary-color: #0079cc;
+      --bob-divider-color: #404040;
+      --bob-dark-gray: #333333;
+      --bob-white: #fff;
+
+      /* material theme overwrites */
+      --primary-text-color: var(--bob-primary-text-color);
+      --primary-background-color: var(--bob-primary-background-color);
+      --primary-color: var(--bob-primary-color);
+      --divider-color: var(--bob-divider-color);
+
+      /* vaadin theme overwrites */
+      --lumo-font-family: 'Lato', sans-serif;
+      --lumo-primary-color: var(--bob-primary-color);
+      --lumo-primary-text-color: var(--bob-primary-color);
+
+
+      /* material colors */
+      --secondary-text-color: var(--light-theme-secondary-color);
+      --disabled-text-color: var(--light-theme-disabled-color);
+      --error-color: var(--paper-deep-orange-a700);
+      --light-primary-color: var(--paper-indigo-100);
+      --dark-primary-color: var(--paper-indigo-700);
+      --accent-color: var(--paper-pink-a200);
+      --light-accent-color: var(--paper-pink-a100);
+      --dark-accent-color: var(--paper-pink-a400);
+
       margin: 0;
       padding: 0;
-      font-family: sans-serif;
-      background-color: #ededed;
+      color: var(--bob-primary-text-color);
+      font-family: 'Lato', sans-serif;
+      min-height: 100vh;
+      background-color: var(--bob-primary-background-color);
     }
   </style>
-  <title>bob-app</title>
+  <title>Black Owned Business Cards</title>
 </head>
 <body>
   <bob-app></bob-app>
