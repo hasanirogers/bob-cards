@@ -6,7 +6,6 @@ import { html, css, LitElement } from 'lit-element';
 
 import 'shufflejs/dist/shuffle.js';
 import '@polymer/paper-checkbox/paper-checkbox.js';
-import '@polymer/paper-input/paper-input.js';
 import '@polymer/paper-toggle-button/paper-toggle-button.js';
 
 import '../../bob-card/bob-card.js';
@@ -118,9 +117,6 @@ export class PageMain extends LitElement {
 
     return html`
       <section class="filters">
-
-        <paper-input @keyup="${(event) => {this.filterTitle(event)}}" placeholder="Search for a business by name."></paper-input>
-
         <div>Select a Category</div>
         <nav class="filters__category">
           <a tabindex="0" ?selected="${this.catFilters.indexOf('restaurant') > -1}" @click="${() => {this.filterCategory('restaurant');}}">Restaurant</a>
@@ -130,7 +126,6 @@ export class PageMain extends LitElement {
 
         ${userPostcodeFilter}
         ${userStateFilter}
-
       </section>
 
       <section class="shuffle">

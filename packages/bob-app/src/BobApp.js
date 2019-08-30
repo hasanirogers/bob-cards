@@ -10,6 +10,10 @@ import '@polymer/paper-input/paper-input.js';
 import '../../page-main/page-main.js';
 import '../../page-one/page-one.js';
 
+import {
+  iconSearch,
+} from './svg.js';
+
 
 export class BobApp extends LitElement {
 
@@ -26,6 +30,28 @@ export class BobApp extends LitElement {
 
         vaadin-tab[selected] {
           color: var(--bob-primary-color);
+        }
+
+        header {
+          display: flex;
+          padding: 0 1rem;
+        }
+
+        header > h1 {
+          flex: 1;
+        }
+
+        header > div {
+          max-width: 33%;
+          flex: 0 0 33%;
+        }
+
+        svg {
+          fill: var(--primary-text-color);
+        }
+
+        #iconSearch {
+          width: 24px;
         }
       `,
     ];
@@ -53,9 +79,11 @@ export class BobApp extends LitElement {
   render() {
     return html`
       <header>
-        <div>Business Cards</div>
+        <h1>Black Owned Businesses</h1>
         <div>
-          <paper-input @keyup="${(event) => {this.filterTitle(event)}}" placeholder="Search for a business by name."></paper-input>
+          <paper-input @keyup="${(event) => {this.filterTitle(event)}}" placeholder="Search by name.">
+            <div slot="suffix">${iconSearch}</div>
+          </paper-input>
         </div>
       </header>
 
@@ -82,5 +110,10 @@ export class BobApp extends LitElement {
   switchRoute(route) {
     this.page = route;
     Router.go(`/${route}`);
+  }
+
+  filterTitle(event) {
+    const mainPage = this.shadowRoot.querySelector('page-main');
+    mainPage.filterTitle(event);
   }
 }

@@ -53,6 +53,7 @@ export class BobCard extends LitElement {
         list-style: none;
         padding: 0;
         margin: 0;
+        justify-content: flex-end;
       }
 
       /* .online li:not(:last-child) {
