@@ -1,4 +1,5 @@
 import { html, css, LitElement } from 'lit-element';
+import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import {
   iconLocation,
   iconFacebook,
@@ -55,10 +56,6 @@ export class BobCard extends LitElement {
         margin: 0;
         justify-content: flex-end;
       }
-
-      /* .online li:not(:last-child) {
-        margin-right: 1rem;
-      } */
 
       .card {
         position: relative;
@@ -146,7 +143,7 @@ export class BobCard extends LitElement {
       <div class="${this.image && this.image !== '' && this.image !== 'undefined' ? 'card card--image' : 'card'}">
         ${image}
         <div class="content">
-          <h3>${this.name}</h3>
+          <h3>${unsafeHTML(this.name)}</h3>
           <div class="address">${address}</div>
           <div class="phone">
             ${iconPhone} ${this.phone}

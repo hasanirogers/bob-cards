@@ -9,15 +9,13 @@ import '@polymer/paper-checkbox/paper-checkbox.js';
 import '@polymer/paper-toggle-button/paper-toggle-button.js';
 
 import '../../bob-card/bob-card.js';
+import '../../bob-catnav/bob-catnav.js';
 
 export class PageMain extends LitElement {
   static get styles() {
     return css`
-      a[selected] {
-        color: blue;
-      }
-
       .shuffle {
+        margin: 0 1rem;
         height: auto;
       }
 
@@ -34,7 +32,7 @@ export class PageMain extends LitElement {
 
       @media screen and (min-width: 769px) {
         .filters {
-          padding: 2rem;
+          padding: 1rem 2rem;
         }
 
         .shuffle__item {
@@ -48,7 +46,6 @@ export class PageMain extends LitElement {
     return {
       title: { type: String },
       businesses: { type: Object },
-      catFilters: { type: Array },
       userAddress: { type: Object },
       shuffleInstance: { type: Object },
     };
@@ -57,7 +54,7 @@ export class PageMain extends LitElement {
   constructor() {
     super();
     this.businesses = {};
-    this.catFilters = [];
+    this.checkedState = true;
   }
 
   render() {
@@ -117,15 +114,11 @@ export class PageMain extends LitElement {
 
     return html`
       <section class="filters">
-        <div>Select a Category</div>
-        <nav class="filters__category">
-          <a tabindex="0" ?selected="${this.catFilters.indexOf('restaurant') > -1}" @click="${() => {this.filterCategory('restaurant');}}">Restaurant</a>
-          <a tabindex="0" ?selected="${this.catFilters.indexOf('city') > -1}" @click="${() => {this.filterCategory('city');}}">City</a>
-          <a tabindex="0" ?selected="${this.catFilters.indexOf('nature') > -1}" @click="${() => {this.filterCategory('nature');}}">Nature</a>
-        </nav>
-
-        ${userPostcodeFilter}
-        ${userStateFilter}
+        <div class="filters__location">
+          ${userPostcodeFilter}
+          ${userStateFilter}
+        </div>
+        <bob-catnav .shuffleInstance="${this.shuffleInstance}"></bob-catnav>
       </section>
 
       <section class="shuffle">
@@ -150,7 +143,9 @@ export class PageMain extends LitElement {
   updated() {
     this.shuffleInstance.resetItems();
     this.shuffleInstance.update();
+
     if (this.userAddress) this.filterState(this.userAddress.address.state, null, true);
+    // if (this.userAddress) this.filterPostCode((this.userAddress.address.postcode, null));
   }
 
   getCatArray(catObject) {
@@ -165,20 +160,24 @@ export class PageMain extends LitElement {
   }
 
   filterPostCode(postcode, event) {
-    this.shuffleInstance.filter((element) => {
-      if (event.path[0].checked) {
-        return element.getAttribute('data-postcode') === postcode;
-      }
+    if (event) {
+      this.shuffleInstance.filter((element) => {
+        if (event.path[0].checked) {
+          return element.getAttribute('data-postcode') === postcode;
+        }
+      });
+    }
 
-      return true;
-    });
+    return true;
   }
 
-  filterState(state, event, checked) {
+  filterState(state, event, initChecked) {
+    console.log('ran filter state');
+
     this.shuffleInstance.filter((element) => {
       const userChecked = event ? event.path[0].checked : false;
 
-      if (userChecked || checked) {
+      if (userChecked || initChecked) {
         return element.getAttribute('data-state') === state;
       }
 
@@ -187,6 +186,7 @@ export class PageMain extends LitElement {
   }
 
   filterTitle(event) {
+    console.log('filterTitle called');
     const searchText = event.target.value.toLowerCase();
 
     this.shuffleInstance.filter((element) => {
@@ -195,27 +195,6 @@ export class PageMain extends LitElement {
 
       return titleText.indexOf(searchText) !== -1;
     });
-  }
-
-  addCatFilter(filter) {
-    const newfilter = [filter];
-    this.catFilters = this.catFilters.concat(newfilter);
-    this.shuffleInstance.filter(this.catFilters);
-  }
-
-  removeCatFilter(filter) {
-    this.catFilters = this.catFilters.filter(e => e !== filter);
-    this.shuffleInstance.filter(this.catFilters);
-  }
-
-  filterCategory(category) {
-    if (this.catFilters.indexOf(category) > -1) {
-      // the filter has been applied, remove it
-      this.removeCatFilter(category);
-    } else {
-      // the filter has not been applied, add it
-      this.addCatFilter(category);
-    }
   }
 
   getLocation() {
