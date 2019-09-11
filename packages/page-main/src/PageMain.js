@@ -176,18 +176,22 @@ export class PageMain extends LitElement {
   }
 
   filterTitle(event) {
-    console.log('filterTitle called');
-    const searchText = event.target.value.toLowerCase();
 
-    this.shuffleInstance.filter((element) => {
-      const titleElement = element.querySelector('bob-card');
-      const titleText = titleElement.getAttribute('name').toLowerCase();
+    this.shuffleInstance.filter((element) => this.filterAllItems(element, event, true));
+    // const searchText = event.target.value.toLowerCase();
 
-      return titleText.indexOf(searchText) !== -1;
-    });
+    // this.shuffleInstance.filter((element) => {
+    //   const titleElement = element.querySelector('bob-card');
+    //   const titleText = titleElement.getAttribute('name').toLowerCase();
+
+    //   return titleText.indexOf(searchText) !== -1;
+    // });
   }
 
-  filterAllItems(element) {
+  filterAllItems(element, event, isKeywordSearch) {
+    const searchText = event ? event.target.value.toLowerCase() : '';
+    const titleText = element.querySelector('bob-card').getAttribute('name').toLowerCase();
+
     // check State
     if (this.checkedState && element.getAttribute('data-state') !== this.userAddress.address.state) {
       return false;
@@ -195,6 +199,11 @@ export class PageMain extends LitElement {
 
     // check zip code
     if (this.checkedPostcode && element.getAttribute('data-postcode') !== this.userAddress.address.postcode) {
+      return false;
+    }
+
+    // check keyword search
+    if (isKeywordSearch && titleText.indexOf(searchText) === -1) {
       return false;
     }
 
