@@ -47,6 +47,8 @@ export class PageMain extends LitElement {
       title: { type: String },
       businesses: { type: Object },
       userAddress: { type: Object },
+      checkedState: { type: Boolean },
+      checkedPostcode: { type: Boolean },
       shuffleInstance: { type: Object },
     };
   }
@@ -55,6 +57,7 @@ export class PageMain extends LitElement {
     super();
     this.businesses = {};
     this.checkedState = true;
+    this.checkedPostcode = false;
   }
 
   render() {
@@ -66,7 +69,7 @@ export class PageMain extends LitElement {
       userPostcodeFilter = html `
         <p>
           <label>
-            <paper-toggle-button @change="${(event) => {this.filterPostCode(this.userAddress.address.postcode, event); }}"></paper-toggle-button>
+            <paper-toggle-button @change="${(event) => {this.filterPostCode(event); }}"></paper-toggle-button>
             Only show businesses in ${this.userAddress.address.postcode}.
           </label>
         </p>
@@ -77,7 +80,7 @@ export class PageMain extends LitElement {
       userStateFilter = html `
         <p>
           <label>
-          <paper-toggle-button checked @change="${(event) => {this.filterState(this.userAddress.address.state, event); }}"></paper-toggle-button>
+          <paper-toggle-button checked @change="${(event) => {this.filterState(event); }}"></paper-toggle-button>
           Only show businesses in ${this.userAddress.address.state}.
           </label>
         </p>
@@ -143,9 +146,6 @@ export class PageMain extends LitElement {
   updated() {
     this.shuffleInstance.resetItems();
     this.shuffleInstance.update();
-
-    if (this.userAddress) this.filterState(this.userAddress.address.state, null, true);
-    // if (this.userAddress) this.filterPostCode((this.userAddress.address.postcode, null));
   }
 
   getCatArray(catObject) {
@@ -159,30 +159,20 @@ export class PageMain extends LitElement {
     return JSON.stringify(catArray);
   }
 
-  filterPostCode(postcode, event) {
+  filterPostCode(event) {
     if (event) {
-      this.shuffleInstance.filter((element) => {
-        if (event.path[0].checked) {
-          return element.getAttribute('data-postcode') === postcode;
-        }
-      });
+      this.checkedPostcode = event.path[0].checked;
     }
 
-    return true;
+    this.shuffleInstance.filter((element) => this.filterAllItems(element));
   }
 
-  filterState(state, event, initChecked) {
-    console.log('ran filter state');
+  filterState(event) {
+    if (event) {
+      this.checkedState = event.path[0].checked;
+    }
 
-    this.shuffleInstance.filter((element) => {
-      const userChecked = event ? event.path[0].checked : false;
-
-      if (userChecked || initChecked) {
-        return element.getAttribute('data-state') === state;
-      }
-
-      return true;
-    })
+    this.shuffleInstance.filter((element) => this.filterAllItems(element));
   }
 
   filterTitle(event) {
@@ -195,6 +185,20 @@ export class PageMain extends LitElement {
 
       return titleText.indexOf(searchText) !== -1;
     });
+  }
+
+  filterAllItems(element) {
+    // check State
+    if (this.checkedState && element.getAttribute('data-state') !== this.userAddress.address.state) {
+      return false;
+    }
+
+    // check zip code
+    if (this.checkedPostcode && element.getAttribute('data-postcode') !== this.userAddress.address.postcode) {
+      return false;
+    }
+
+    return true;
   }
 
   getLocation() {
@@ -219,7 +223,9 @@ export class PageMain extends LitElement {
       .then(response => response.json());
 
     this.userAddress = address;
-    // console.log('user address', this.userAddress);
+
+    // apply the state filter as soon as we have an address
+    this.filterState();
   }
 
   async fetchBusinesses() {
