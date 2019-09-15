@@ -21,7 +21,7 @@ export class BobCatNav extends LitElement {
 
       div {
         overflow: auto;
-        margin: 0 2rem 1rem 2rem;
+        margin: 2rem 1rem;
       }
 
       a {
@@ -38,7 +38,6 @@ export class BobCatNav extends LitElement {
 
   static get properties() {
     return {
-      label: { type: String },
       categories: { type: Array },
       catFilters: { type: Array },
       shuffleInstance: { type: Object },
@@ -48,7 +47,6 @@ export class BobCatNav extends LitElement {
   constructor() {
     super();
 
-    this.label = 'Select a Category:';
     this.categories = [];
     this.catFilters = [];
   }
@@ -73,7 +71,6 @@ export class BobCatNav extends LitElement {
     }
 
     return html`
-      <p>${this.label}</p>
       <div>
         <nav>${categories}</nav>
       </div>

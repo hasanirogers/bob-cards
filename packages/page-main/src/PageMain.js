@@ -14,6 +14,14 @@ import '../../bob-catnav/bob-catnav.js';
 export class PageMain extends LitElement {
   static get styles() {
     return css`
+      paper-toggle-button {
+        display: inline-block;
+      }
+
+      label {
+        display: flex;
+      }
+
       .shuffle {
         margin: 0 1rem;
         height: auto;
@@ -30,14 +38,61 @@ export class PageMain extends LitElement {
         width: 8.33333%;
       }
 
+      .filters {
+        position: relative;
+      }
+
+      .filters__location {
+        display: flex;
+        flex-direction: column;
+        max-height: 1px;
+        overflow: hidden;
+        transition: all 300ms ease;
+      }
+
+      .filters__location:not(:last-child) > * {
+        margin-right: 2rem;
+      }
+
+      .filters--opened .filters__location {
+        max-height: 9999px;
+      }
+
+      .filters__toggle {
+        cursor: pointer;
+        font-size: 2rem;
+        display: inline-block;
+
+        position: absolute;
+        left: 50%;
+        bottom: -1rem;
+
+        animation: slideIn 500ms ease-out;
+        transition: all 300ms ease;
+        transform: translateX(-50%) rotate(90deg);
+      }
+
+      .filters--opened .filters__toggle {
+        transform: translateX(-50%) rotate(270deg);
+      }
+
       @media screen and (min-width: 769px) {
         .filters {
           padding: 1rem 2rem;
         }
 
+        .filters__location {
+          flex-direction: row;
+        }
+
         .shuffle__item {
           width: 33%;
         }
+      }
+
+      @keyframes slideIn {
+        from { transform: translateY(-4rem) translateX(-50%) rotate(90deg); }
+        to { transform: translateY(0) translateX(-50%) rotate(90deg); }
       }
     `;
   }
@@ -72,7 +127,7 @@ export class PageMain extends LitElement {
         <p>
           <label>
             <paper-toggle-button @change="${(event) => {this.filterPostCode(event); }}"></paper-toggle-button>
-            Only show businesses in ${this.userAddress.address.postcode}.
+            <span>Only show businesses in ${this.userAddress.address.postcode}.</span>
           </label>
         </p>
       `;
@@ -82,8 +137,8 @@ export class PageMain extends LitElement {
       userStateFilter = html `
         <p>
           <label>
-          <paper-toggle-button checked @change="${(event) => {this.filterState(event); }}"></paper-toggle-button>
-          Only show businesses in ${this.userAddress.address.state}.
+            <paper-toggle-button checked @change="${(event) => {this.filterState(event); }}"></paper-toggle-button>
+            <span>Only show businesses in <strong>${this.userAddress.address.state}</strong>.</span>
           </label>
         </p>
       `;
@@ -123,11 +178,13 @@ export class PageMain extends LitElement {
           ${userPostcodeFilter}
           ${userStateFilter}
         </div>
-        <bob-catnav
-          @update-cat-filter=${this.filterCategories}
-          .shuffleInstance="${this.shuffleInstance}">
-        </bob-catnav>
+        <span class="filters__toggle" @click="${() => this.toggleLocationFilters()}">›</span>
       </section>
+
+      <bob-catnav
+        @update-cat-filter=${this.filterCategories}
+        .shuffleInstance="${this.shuffleInstance}">
+      </bob-catnav>
 
       <section class="shuffle">
         ${businesses}
@@ -151,6 +208,10 @@ export class PageMain extends LitElement {
   updated() {
     this.shuffleInstance.resetItems();
     this.shuffleInstance.update();
+  }
+
+  toggleLocationFilters() {
+    this.shadowRoot.querySelector('.filters').classList.toggle('filters--opened');
   }
 
   getCatArray(catObject) {

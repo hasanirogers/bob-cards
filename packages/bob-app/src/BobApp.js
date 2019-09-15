@@ -34,16 +34,12 @@ export class BobApp extends LitElement {
 
         header {
           display: flex;
+          flex-direction: column;
           padding: 0 1rem;
         }
 
         header > h1 {
           flex: 1;
-        }
-
-        header > div {
-          max-width: 33%;
-          flex: 0 0 33%;
         }
 
         svg {
@@ -52,6 +48,17 @@ export class BobApp extends LitElement {
 
         #iconSearch {
           width: 24px;
+        }
+
+        @media screen and (min-width: 769px) {
+          header {
+            flex-direction: row;
+          }
+
+          header > div {
+            max-width: 33%;
+            flex: 0 0 33%;
+          }
         }
       `,
     ];
