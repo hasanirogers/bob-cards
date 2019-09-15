@@ -87,12 +87,24 @@ export class BobCatNav extends LitElement {
   addCatFilter(filter) {
     const newfilter = [filter];
     this.catFilters = this.catFilters.concat(newfilter);
-    this.shuffleInstance.filter(this.catFilters);
+    // this.shuffleInstance.filter(this.catFilters);
+    this.dispatchEvent(new CustomEvent('update-cat-filter', {
+      detail: {
+        currentCategories: this.catFilters,
+        allCategories: this.categories,
+      }
+    }));
   }
 
   removeCatFilter(filter) {
     this.catFilters = this.catFilters.filter(e => e !== filter);
-    this.shuffleInstance.filter(this.catFilters);
+    // this.shuffleInstance.filter(this.catFilters);
+    this.dispatchEvent(new CustomEvent('update-cat-filter', {
+      detail: {
+        currentCategories: this.catFilters,
+        allCategories: this.categories,
+      }
+    }));
   }
 
   filterCategory(category) {

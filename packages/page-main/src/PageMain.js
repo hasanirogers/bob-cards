@@ -49,6 +49,7 @@ export class PageMain extends LitElement {
       userAddress: { type: Object },
       checkedState: { type: Boolean },
       checkedPostcode: { type: Boolean },
+      currentCategories: { type: Array },
       shuffleInstance: { type: Object },
     };
   }
@@ -58,6 +59,7 @@ export class PageMain extends LitElement {
     this.businesses = {};
     this.checkedState = true;
     this.checkedPostcode = false;
+    this.currentCategories = [];
   }
 
   render() {
@@ -121,7 +123,10 @@ export class PageMain extends LitElement {
           ${userPostcodeFilter}
           ${userStateFilter}
         </div>
-        <bob-catnav .shuffleInstance="${this.shuffleInstance}"></bob-catnav>
+        <bob-catnav
+          @update-cat-filter=${this.filterCategories}
+          .shuffleInstance="${this.shuffleInstance}">
+        </bob-catnav>
       </section>
 
       <section class="shuffle">
@@ -176,21 +181,18 @@ export class PageMain extends LitElement {
   }
 
   filterTitle(event) {
-
-    this.shuffleInstance.filter((element) => this.filterAllItems(element, event, true));
-    // const searchText = event.target.value.toLowerCase();
-
-    // this.shuffleInstance.filter((element) => {
-    //   const titleElement = element.querySelector('bob-card');
-    //   const titleText = titleElement.getAttribute('name').toLowerCase();
-
-    //   return titleText.indexOf(searchText) !== -1;
-    // });
+    this.shuffleInstance.filter((element) => this.filterAllItems(element, event, true, false));
   }
 
-  filterAllItems(element, event, isKeywordSearch) {
+  filterCategories(event) {
+    this.currentCategories = event.detail.currentCategories;
+    this.shuffleInstance.filter((element) => this.filterAllItems(element, null, false, true));
+  }
+
+  filterAllItems(element, event, isKeywordSearch, isCategorySearch) {
     const searchText = event ? event.target.value.toLowerCase() : '';
     const titleText = element.querySelector('bob-card').getAttribute('name').toLowerCase();
+    const elementCategories = JSON.parse(element.getAttribute('data-groups'));
 
     // check State
     if (this.checkedState && element.getAttribute('data-state') !== this.userAddress.address.state) {
@@ -207,6 +209,14 @@ export class PageMain extends LitElement {
       return false;
     }
 
+    // check category
+    // basically we look for a subset of arrays using currentCategories and elemeentCategories
+    // stackoverflow: https://stackoverflow.com/questions/38811421/check-if-an-array-is-subset-of-another-array
+    if (isCategorySearch && !this.currentCategories.every(value => elementCategories.includes(value))) {
+      return false;
+    }
+
+    // if it passed all the checks show the element
     return true;
   }
 
