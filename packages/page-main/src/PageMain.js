@@ -24,7 +24,7 @@ export class PageMain extends LitElement {
 
       .shuffle {
         margin: 0 1rem;
-        height: auto;
+        /* height: auto; */
       }
 
       .shuffle__item {
@@ -120,6 +120,7 @@ export class PageMain extends LitElement {
   render() {
     let userPostcodeFilter;
     let userStateFilter;
+    let locationFilters;
     let businesses;
 
     if (this.userAddress) {
@@ -143,6 +144,10 @@ export class PageMain extends LitElement {
         </p>
       `;
     }
+
+    if (this.userAddress) {
+      locationFilters = html `<span class="filters__toggle" @click="${() => this.toggleLocationFilters()}">›</span>`;
+    };
 
     if (this.businesses.length > 0) {
       businesses = this.businesses.map((business) => {
@@ -178,7 +183,7 @@ export class PageMain extends LitElement {
           ${userPostcodeFilter}
           ${userStateFilter}
         </div>
-        <span class="filters__toggle" @click="${() => this.toggleLocationFilters()}">›</span>
+        ${locationFilters}
       </section>
 
       <bob-catnav
@@ -255,14 +260,16 @@ export class PageMain extends LitElement {
     const titleText = element.querySelector('bob-card').getAttribute('name').toLowerCase();
     const elementCategories = JSON.parse(element.getAttribute('data-groups'));
 
-    // check State
-    if (this.checkedState && element.getAttribute('data-state') !== this.userAddress.address.state) {
-      return false;
-    }
+    if (this.userAddress) {
+      // check State
+      if (this.checkedState && element.getAttribute('data-state') !== this.userAddress.address.state) {
+        return false;
+      }
 
-    // check zip code
-    if (this.checkedPostcode && element.getAttribute('data-postcode') !== this.userAddress.address.postcode) {
-      return false;
+      // check zip code
+      if (this.checkedPostcode && element.getAttribute('data-postcode') !== this.userAddress.address.postcode) {
+        return false;
+      }
     }
 
     // check keyword search
@@ -283,7 +290,10 @@ export class PageMain extends LitElement {
 
   getLocation() {
     if (navigator.geolocation) {
-      window.navigator.geolocation.getCurrentPosition((position) => {this.getLocationSuccess(position);}, this.getLocationError);
+      window.navigator.geolocation.getCurrentPosition(
+        (position) => this.getLocationSuccess(position),
+        (error) => this.getLocationError(error)
+      );
     }
   }
 
@@ -296,6 +306,8 @@ export class PageMain extends LitElement {
 
   getLocationError(error) {
     console.log('error', error);
+    this.shuffleInstance.resetItems();
+    this.shuffleInstance.update();
   }
 
   async fetchAddress(lat, lon) {
@@ -303,6 +315,8 @@ export class PageMain extends LitElement {
       .then(response => response.json());
 
     this.userAddress = address;
+
+    console.log(this.userAddress);
 
     // apply the state filter as soon as we have an address
     this.filterState();
