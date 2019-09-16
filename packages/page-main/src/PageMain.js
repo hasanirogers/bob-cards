@@ -4,7 +4,7 @@
 
 import { html, css, LitElement } from 'lit-element';
 
-import 'shufflejs/dist/shuffle.js';
+import Shuffle from 'shufflejs/dist/shuffle.esm.js';
 import '@polymer/paper-checkbox/paper-checkbox.js';
 import '@polymer/paper-toggle-button/paper-toggle-button.js';
 
@@ -198,12 +198,10 @@ export class PageMain extends LitElement {
   }
 
   firstUpdated() {
-    const { Shuffle } = window;
-    const element = this.shadowRoot.querySelector('.shuffle');
+    const shuffleElement = this.shadowRoot.querySelector('.shuffle');
 
-    this.shuffleInstance = new Shuffle(element, {
-      itemSelector: '.shuffle__item',
-      sizer: this.shadowRoot.querySelector('.shuffle__sizer'),
+    this.shuffleInstance = new Shuffle(shuffleElement, {
+      itemSelector: '.shuffle__item'
     });
 
     this.getLocation();
