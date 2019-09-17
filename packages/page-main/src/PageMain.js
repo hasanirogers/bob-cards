@@ -105,6 +105,7 @@ export class PageMain extends LitElement {
       checkedState: { type: Boolean },
       checkedPostcode: { type: Boolean },
       currentCategories: { type: Array },
+      nearByZipCodes: { type: Array },
       shuffleInstance: { type: Object },
     };
   }
@@ -123,12 +124,12 @@ export class PageMain extends LitElement {
     let locationFilters;
     let businesses;
 
-    if (this.userAddress) {
+    if (this.nearByZipCodes) {
       userPostcodeFilter = html `
         <p>
           <label>
             <paper-toggle-button @change="${(event) => {this.filterPostCode(event); }}"></paper-toggle-button>
-            <span>Only show businesses in ${this.userAddress.address.postcode}.</span>
+            <span>Show businesses within 10 milies of <strong>${this.userAddress.address.postcode}</strong>.</span>
           </label>
         </p>
       `;
@@ -265,7 +266,10 @@ export class PageMain extends LitElement {
       }
 
       // check zip code
-      if (this.checkedPostcode && element.getAttribute('data-postcode') !== this.userAddress.address.postcode) {
+      // if (this.checkedPostcode && element.getAttribute('data-postcode') !== this.userAddress.address.postcode) {
+      //   return false;
+      // }
+      if (this.checkedPostcode && this.nearByZipCodes.indexOf(element.getAttribute('data-postcode')) === -1) {
         return false;
       }
     }
@@ -314,10 +318,11 @@ export class PageMain extends LitElement {
 
     this.userAddress = address;
 
-    console.log(this.userAddress);
-
     // apply the state filter as soon as we have an address
     this.filterState();
+
+    // get the nearbyzips as soon as we have an address
+    this.fetchZipCodes();
   }
 
   async fetchBusinesses() {
@@ -332,5 +337,13 @@ export class PageMain extends LitElement {
       });
 
     this.businesses = businesses;
+  }
+
+  async fetchZipCodes() {
+    const distance = '10';
+    const nearByZipCodes = await fetch(`/nearbyzips/${this.userAddress.address.postcode}/${distance}`)
+      .then(response => response.json());
+
+    this.nearByZipCodes = nearByZipCodes;
   }
 }

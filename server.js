@@ -3,7 +3,7 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 
-const zipcodes = require('./server/routes/zipcodes');
+const zipcodes = require('./server/routes/nearbyzips');
 
 const app = express();
 
@@ -26,6 +26,6 @@ app.use(express.static(path.join(__dirname, 'dist')));
 // app.use('/node_modules', express.static(path.join(__dirname, 'node_modules')));
 // app.use('/assets', express.static(path.join(__dirname, 'server/assets')));
 
-app.use('/zipcodes', zipcodes);
+app.use('/nearbyzips', zipcodes);
 
 module.exports = app;
