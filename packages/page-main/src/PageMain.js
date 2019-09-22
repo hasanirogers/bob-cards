@@ -101,6 +101,9 @@ export class PageMain extends LitElement {
     return {
       title: { type: String },
       businesses: { type: Object },
+      perPage: { type: Number },
+      totalPages: { type: Number },
+      currentPage: { type: Number },
       userAddress: { type: Object },
       checkedState: { type: Boolean },
       checkedPostcode: { type: Boolean },
@@ -113,6 +116,8 @@ export class PageMain extends LitElement {
   constructor() {
     super();
     this.businesses = {};
+    this.perPage = 9;
+    this.currentPage = 1;
     this.checkedState = true;
     this.checkedPostcode = false;
     this.currentCategories = [];
@@ -152,7 +157,7 @@ export class PageMain extends LitElement {
 
     if (this.businesses.length > 0) {
       businesses = this.businesses.map((business) => {
-        const categories = this.getCatArray(business.acf.categories);
+        const categories = (business.acf) ? this.getCatArray(business.acf.categories) : '';
 
         return html `
           <figure
@@ -195,6 +200,9 @@ export class PageMain extends LitElement {
       <section class="shuffle">
         ${businesses}
       </section>
+
+      <!-- temp -->
+      <!-- <button @click=${this.loadMoreCards}>Load More</button> -->
     `;
   }
 
@@ -207,17 +215,29 @@ export class PageMain extends LitElement {
 
     this.getLocation();
     this.fetchBusinesses();
+
+    window.addEventListener('scroll', () => this.handleScroll());
   }
 
   updated() {
-    this.shuffleInstance.resetItems();
-    this.shuffleInstance.update();
+    // when we add cards the instance we need a delay to make sure they're in the DOM
+    setTimeout(() => {
+      this.shuffleInstance.resetItems();
+      this.shuffleInstance.update();
+    }, 1);
   }
 
+  /**
+   * Toggles a modifer of --opened to the .filters container on click
+   */
   toggleLocationFilters() {
     this.shadowRoot.querySelector('.filters').classList.toggle('filters--opened');
   }
 
+  /**
+   * Takes the category object returned by ACF in REST and transform it to an array suitable for data-groups
+   * @param {Object} catObject
+   */
   getCatArray(catObject) {
     const catArray = [];
 
@@ -229,6 +249,10 @@ export class PageMain extends LitElement {
     return JSON.stringify(catArray);
   }
 
+  /**
+   * Handles the toggle of near by zip codes and calls the master filter function
+   * @param {Event} event
+   */
   filterPostCode(event) {
     if (event) {
       this.checkedPostcode = event.path[0].checked;
@@ -237,6 +261,10 @@ export class PageMain extends LitElement {
     this.shuffleInstance.filter((element) => this.filterAllItems(element));
   }
 
+  /**
+   * Handles th toggle of filtering by State and calls the master filter function
+   * @param {Event} event
+   */
   filterState(event) {
     if (event) {
       this.checkedState = event.path[0].checked;
@@ -245,15 +273,32 @@ export class PageMain extends LitElement {
     this.shuffleInstance.filter((element) => this.filterAllItems(element));
   }
 
+  /**
+   * Handles keyword search on keypress and calls the master filter function
+   * @param {Event} event
+   */
   filterTitle(event) {
     this.shuffleInstance.filter((element) => this.filterAllItems(element, event, true, false));
   }
 
+
+  /**
+   * Handles category filter by receiving data from CatNavs' update-cat-filter event. Calls master filter function.
+   * @param {Event} event
+   */
   filterCategories(event) {
     this.currentCategories = event.detail.currentCategories;
     this.shuffleInstance.filter((element) => this.filterAllItems(element, null, false, true));
   }
 
+
+  /**
+   * The master filter function. Return false to disclude the element from Shuffle Instance.
+   * @param {DOMElement} element | the element to be filtered
+   * @param {Event} event | the event from its various handlers
+   * @param {Boolean} isKeywordSearch | true if called from a keyword search
+   * @param {Boolean} isCategorySearch | true if called from a category filter
+   */
   filterAllItems(element, event, isKeywordSearch, isCategorySearch) {
     const searchText = event ? event.target.value.toLowerCase() : '';
     const titleText = element.querySelector('bob-card').getAttribute('name').toLowerCase();
@@ -261,26 +306,25 @@ export class PageMain extends LitElement {
 
     if (this.userAddress) {
       // check State
+      // if the user state is not state on the element
       if (this.checkedState && element.getAttribute('data-state') !== this.userAddress.address.state) {
         return false;
       }
 
-      // check zip code
-      // if (this.checkedPostcode && element.getAttribute('data-postcode') !== this.userAddress.address.postcode) {
-      //   return false;
-      // }
+      // if the element zip code is not in the near by zip codes
       if (this.checkedPostcode && this.nearByZipCodes.indexOf(element.getAttribute('data-postcode')) === -1) {
         return false;
       }
     }
 
     // check keyword search
+    // if its a keyword search and the user entered text is not in the title of the current element
     if (isKeywordSearch && titleText.indexOf(searchText) === -1) {
       return false;
     }
 
     // check category
-    // basically we look for a subset of arrays using currentCategories and elemeentCategories
+    // basically we look for a subset of arrays using currentCategories and elementCategories
     // stackoverflow: https://stackoverflow.com/questions/38811421/check-if-an-array-is-subset-of-another-array
     if (isCategorySearch && !this.currentCategories.every(value => elementCategories.includes(value))) {
       return false;
@@ -290,6 +334,9 @@ export class PageMain extends LitElement {
     return true;
   }
 
+  /**
+   * uses geolocation to get the coords of the user's location
+   */
   getLocation() {
     if (navigator.geolocation) {
       window.navigator.geolocation.getCurrentPosition(
@@ -299,6 +346,10 @@ export class PageMain extends LitElement {
     }
   }
 
+  /**
+   * Handles successfully grabbing the user location
+   * @param {Object} position | cordinates of the user
+   */
   getLocationSuccess(position) {
     const lat = position.coords.latitude;
     const lon = position.coords.longitude;
@@ -306,12 +357,60 @@ export class PageMain extends LitElement {
     this.fetchAddress(lat, lon);
   }
 
+  /**
+   * Handles a scenario where coords can't be obtained
+   * @param {Object} error
+   */
   getLocationError(error) {
     console.log('error', error);
     this.shuffleInstance.resetItems();
     this.shuffleInstance.update();
   }
 
+  /**
+   * Handles scroll detection for adding more cards
+   */
+  handleScroll() {
+    const shuffleBlock = this.shadowRoot.querySelector('.shuffle');
+    const shuffleBlockOffset = shuffleBlock.offsetTop + shuffleBlock.clientHeight - 2; // add -2 to trigger slightly before .shuffle ends
+    const pageOffset = window.pageYOffset + window.innerHeight;
+
+    if (pageOffset > shuffleBlockOffset) {
+      console.log('end of page scroll detected');
+      this.loadMoreCards();
+    }
+  }
+
+  /**
+   * Increments the current page and calls for more cards to be loaded
+   */
+  loadMoreCards() {
+    this.currentPage = this.currentPage + 1;
+    this.loadCards();
+  }
+
+  /**
+   * Handles the logic of fetching more cards and loading them into business object
+   */
+  async loadCards() {
+    console.log('current page', this.currentPage);
+    console.log('load cards fired');
+
+    if (this.currentPage < this.totalPages) {
+
+      const url = `http://bob.hasanirogers.local/wp-json/wp/v2/business?per_page=${this.perPage}&page=${this.currentPage}&_embed`;
+      const businesses = await fetch(url)
+        .then(response => response.json());
+
+      this.businesses = this.businesses.concat(businesses);
+    }
+  }
+
+  /**
+   * Uses Open Street Map to reverse geocode and get the users approx address
+   * @param {String} lat | Lattitude
+   * @param {String} lon | Longitude
+   */
   async fetchAddress(lat, lon) {
     const address = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&addressdetails=1`)
       .then(response => response.json());
@@ -325,25 +424,34 @@ export class PageMain extends LitElement {
     this.fetchZipCodes();
   }
 
+  /**
+   * Grabs the businesses and totalPage count from WordPress
+   */
   async fetchBusinesses() {
-    const businesses = await fetch(`http://bob.hasanirogers.local/wp-json/wp/v2/business?per_page=99&_embed`)
-      .then(response => response.text())
-      .then(text => {
-        try {
-          return JSON.parse(text);
-        } catch (error) {
-          console.log(error);
-        }
+    const businesses = await fetch(`http://bob.hasanirogers.local/wp-json/wp/v2/business?per_page=${this.perPage}&_embed`)
+      .then(response => {
+        this.totalPages = response.headers.get('x-wp-totalpages');
+        return response.json();
       });
 
     this.businesses = businesses;
   }
 
+  /**
+   * Gets the near by zip codes from an Express service
+   */
   async fetchZipCodes() {
     const distance = '10';
     const nearByZipCodes = await fetch(`/nearbyzips/${this.userAddress.address.postcode}/${distance}`)
-      .then(response => response.json());
+      .then(response => response.text())
+      .then(text => {
+        try {
+          return JSON.parse(text);
+        } catch (error) {
+          console.log('there was an error fetching near by zipcodes');
+        }
+      });
 
-    this.nearByZipCodes = nearByZipCodes;
+    if (nearByZipCodes) this.nearByZipCodes = nearByZipCodes;
   }
 }
