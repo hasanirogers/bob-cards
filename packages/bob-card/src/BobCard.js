@@ -1,4 +1,5 @@
 import { html, css, LitElement } from 'lit-element';
+import { installMediaQueryWatcher } from 'pwa-helpers/media-query.js';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import {
   iconLocation,
@@ -20,6 +21,11 @@ export class BobCard extends LitElement {
         background: #333333;
         border-radius: var(--card-radius);
         box-shadow: 2px 2px 4px rgba(0,0,0,0.25);
+      }
+
+      a {
+        color: var(--bob-white);
+        text-decoration: none;
       }
 
       img {
@@ -86,19 +92,25 @@ export class BobCard extends LitElement {
       zip: { type: String },
       phone: { type: String },
       website: { type: String },
-      facebook: { type: String }
+      facebook: { type: String },
+      smallScreen: {type: Boolean },
     };
   }
 
-  // constructor() {
-  //   super();
-  // }
+  constructor() {
+    super();
+
+    installMediaQueryWatcher(`(min-width: 768px)`, (matches) => {
+      this.smallScreen = !matches;
+    });
+  }
 
   render() {
     let image;
     let website;
     let facebook;
     let address;
+    let phone;
 
     // image block
     if (this.image && this.image !== '' && this.image !== 'undefined') {
@@ -109,7 +121,9 @@ export class BobCard extends LitElement {
     if (this.address && this.address !== '') {
       address = html `
         <span>${iconLocation}</span>
-        <span>${this.address}, ${this.city}, ${this.state} ${this.zip}</span>
+        <a href="https://www.google.com/maps/dir//${this.name},+${this.address},+${this.city},+${this.state}+${this.zip}/" target="_blank">
+          ${this.address}, ${this.city}, ${this.state} ${this.zip}
+        </a>
       `;
     } else {
       address = html `
@@ -140,6 +154,13 @@ export class BobCard extends LitElement {
       `;
     }
 
+    // phone block
+    if (this.smallScreen) {
+      phone = html `<a href="tel:${this.phone}">${this.phone}</a>`
+    } else {
+      phone = html `${this.phone}`;
+    }
+
     return html`
       <div class="${this.image && this.image !== '' && this.image !== 'undefined' ? 'card card--image' : 'card'}">
         ${image}
@@ -147,7 +168,7 @@ export class BobCard extends LitElement {
           <h3>${unsafeHTML(this.name)}</h3>
           <div class="address">${address}</div>
           <div class="phone">
-            ${iconPhone} ${this.phone}
+            ${iconPhone} ${phone}
           </div>
           <ul class="online">
             ${website}
