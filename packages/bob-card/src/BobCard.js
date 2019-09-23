@@ -23,6 +23,7 @@ export class BobCard extends LitElement {
       }
 
       img {
+        width: 100%;
         max-width: 100%;
         border-top-left-radius: var(--card-radius);
         border-top-right-radius: var(--card-radius);

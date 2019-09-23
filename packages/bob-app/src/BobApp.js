@@ -78,7 +78,7 @@ export class BobApp extends LitElement {
     this.page = location.pathname === '/' ? 'main' : location.pathname.replace('/', '');
     this.tabs = ['main', 'one'];
 
-    installMediaQueryWatcher(`(min-width: 640px)`, (matches) => {
+    installMediaQueryWatcher(`(min-width: 768px)`, (matches) => {
       this.smallScreen = !matches;
     });
   }

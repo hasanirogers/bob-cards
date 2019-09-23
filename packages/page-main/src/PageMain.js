@@ -46,6 +46,7 @@ export class PageMain extends LitElement {
         display: flex;
         flex-direction: column;
         max-height: 1px;
+        padding: 1rem;
         overflow: hidden;
         transition: all 300ms ease;
       }
@@ -65,7 +66,7 @@ export class PageMain extends LitElement {
 
         position: absolute;
         left: 50%;
-        bottom: -1rem;
+        bottom: -1.5rem;
 
         animation: slideIn 500ms ease-out;
         transition: all 300ms ease;
@@ -83,6 +84,10 @@ export class PageMain extends LitElement {
 
         .filters__location {
           flex-direction: row;
+        }
+
+        .filters__toggle {
+          bottom: -1rem;
         }
 
         .shuffle__item {
@@ -200,9 +205,6 @@ export class PageMain extends LitElement {
       <section class="shuffle">
         ${businesses}
       </section>
-
-      <!-- temp -->
-      <!-- <button @click=${this.loadMoreCards}>Load More</button> -->
     `;
   }
 
@@ -384,21 +386,21 @@ export class PageMain extends LitElement {
   /**
    * Increments the current page and calls for more cards to be loaded
    */
-  loadMoreCards() {
-    this.currentPage = this.currentPage + 1;
-    this.loadCards();
-  }
+  // loadMoreCards() {
+  //   this.loadCards();
+  // }
 
   /**
    * Handles the logic of fetching more cards and loading them into business object
    */
-  async loadCards() {
+  async loadMoreCards() {
     console.log('current page', this.currentPage);
-    console.log('load cards fired');
+    console.log('total pages', this.totalPages);
 
     if (this.currentPage < this.totalPages) {
+      this.currentPage = this.currentPage + 1;
 
-      const url = `http://bob.hasanirogers.local/wp-json/wp/v2/business?per_page=${this.perPage}&page=${this.currentPage}&_embed`;
+      const url = `http://bob.hasanirogers.me/?rest_route=/wp/v2/business/&per_page=${this.perPage}&page=${this.currentPage}&_embed`;
       const businesses = await fetch(url)
         .then(response => response.json());
 
@@ -428,7 +430,7 @@ export class PageMain extends LitElement {
    * Grabs the businesses and totalPage count from WordPress
    */
   async fetchBusinesses() {
-    const businesses = await fetch(`http://bob.hasanirogers.local/wp-json/wp/v2/business?per_page=${this.perPage}&_embed`)
+    const businesses = await fetch(`http://bob.hasanirogers.me/?rest_route=/wp/v2/business/&per_page=${this.perPage}&_embed`)
       .then(response => {
         this.totalPages = response.headers.get('x-wp-totalpages');
         return response.json();
