@@ -8,7 +8,8 @@ import '@vaadin/vaadin-tabs/vaadin-tabs.js';
 import '@polymer/paper-input/paper-input.js';
 
 import '../../page-main/page-main.js';
-import '../../page-one/page-one.js';
+import '../../page-submit/page-submit.js';
+import '../../page-contributors/page-contributors.js';
 
 import {
   iconSearch,
@@ -76,7 +77,7 @@ export class BobApp extends LitElement {
   constructor() {
     super();
     this.page = location.pathname === '/' ? 'main' : location.pathname.replace('/', '');
-    this.tabs = ['main', 'one'];
+    this.tabs = ['main', 'submit', 'contributors'];
 
     installMediaQueryWatcher(`(min-width: 768px)`, (matches) => {
       this.smallScreen = !matches;
@@ -95,8 +96,9 @@ export class BobApp extends LitElement {
       </header>
 
       <vaadin-tabs orientation="horizontal" selected="${this.tabs.indexOf(this.page)}" theme="centered">
-        <vaadin-tab @click=${() => this.switchRoute('')}>Main</vaadin-tab>
-        <vaadin-tab @click=${() => this.switchRoute('one')}>One</vaadin-tab>
+        <vaadin-tab @click=${() => this.switchRoute('')}>Businesses</vaadin-tab>
+        <vaadin-tab @click=${() => this.switchRoute('submit')}>Submit a Business</vaadin-tab>
+        <vaadin-tab @click=${() => this.switchRoute('contributors')}>Contributors</vaadin-tab>
       </vaadin-tabs>
 
       <main>
@@ -106,21 +108,34 @@ export class BobApp extends LitElement {
   }
 
   firstUpdated() {
+    // this is where the page components are injected
     const router = new Router(this.shadowRoot.getElementById('outlet'));
+
+    // this is the configuration of the routes
     router.setRoutes([
       {path: '/', component: 'page-main'},
-      {path: '/one', name: 'one', component: 'page-one'},
+      {path: '/submit', name: 'submit', component: 'page-submit'},
+      {path: '/contributors', name: 'contributors', component: 'page-contributors'},
       {path: '(.*)', redirect: '/main', action: () => { this.page = 'main'; }}
     ]);
   }
 
+  /**
+   * A helper that handles switching pages
+   * @param {string} route
+   */
   switchRoute(route) {
     this.page = route;
     Router.go(`/${route}`);
   }
 
+  /**
+   * a wrapper to use filterTitle method of <page-main>
+   * this is nesscessary because shuffleInstance exists on <page-main>
+   * @param {KeyboardEvent} event
+   */
   filterTitle(event) {
     const mainPage = this.shadowRoot.querySelector('page-main');
-    mainPage.filterTitle(event);
+    mainPage.filterTitle(event); // call filterTitle from <page-main>
   }
 }
