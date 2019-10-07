@@ -7,13 +7,16 @@ import { Router } from '@vaadin/router';
 import '@vaadin/vaadin-tabs/vaadin-tabs.js';
 import '@polymer/paper-input/paper-input.js';
 
+import { templateFooter } from './templateFooter.js';
+import { sharedStyles } from './stylesShared.js';
+
 import '../../page-main/page-main.js';
 import '../../page-submit/page-submit.js';
 import '../../page-contributors/page-contributors.js';
 
 import {
   iconSearch,
-} from './svg.js';
+} from './imagesSvg.js';
 
 
 export class BobApp extends LitElement {
@@ -86,6 +89,7 @@ export class BobApp extends LitElement {
 
   render() {
     return html`
+      ${sharedStyles}
       <header>
         <h1>Black Owned Businesses</h1>
         <div>
@@ -104,6 +108,8 @@ export class BobApp extends LitElement {
       <main>
         <section id="outlet"></section>
       </main>
+
+      ${templateFooter}
     `;
   }
 

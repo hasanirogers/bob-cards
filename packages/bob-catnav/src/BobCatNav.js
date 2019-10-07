@@ -38,9 +38,8 @@ export class BobCatNav extends LitElement {
 
   static get properties() {
     return {
-      categories: { type: Array },
-      catFilters: { type: Array },
-      shuffleInstance: { type: Object },
+      categories: { type: Array }, // All categories pull from WordPress
+      catFilters: { type: Array }, // The categories the user has selected
     };
   }
 
@@ -84,7 +83,7 @@ export class BobCatNav extends LitElement {
   addCatFilter(filter) {
     const newfilter = [filter];
     this.catFilters = this.catFilters.concat(newfilter);
-    // this.shuffleInstance.filter(this.catFilters);
+
     this.dispatchEvent(new CustomEvent('update-cat-filter', {
       detail: {
         currentCategories: this.catFilters,
@@ -95,7 +94,7 @@ export class BobCatNav extends LitElement {
 
   removeCatFilter(filter) {
     this.catFilters = this.catFilters.filter(e => e !== filter);
-    // this.shuffleInstance.filter(this.catFilters);
+
     this.dispatchEvent(new CustomEvent('update-cat-filter', {
       detail: {
         currentCategories: this.catFilters,
@@ -115,7 +114,7 @@ export class BobCatNav extends LitElement {
   }
 
   async getAllCategories() {
-    const categories = await fetch(`http://bob.hasanirogers.me/?rest_route=/wp/v2/categories`)
+    const categories = await fetch(`http://bob.hasanirogers.me/wp-json/wp/v2/categories`)
       .then(response => response.json());
 
     this.categories = categories;

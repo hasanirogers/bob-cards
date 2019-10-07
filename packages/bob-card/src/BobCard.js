@@ -6,7 +6,7 @@ import {
   iconFacebook,
   iconPhone,
   iconWebsite,
- } from '../../bob-app/src/svg.js';
+ } from '../../bob-app/src/imagesSvg.js';
 
 
 export class BobCard extends LitElement {
@@ -84,16 +84,16 @@ export class BobCard extends LitElement {
 
   static get properties() {
     return {
-      image: { type: String },
-      name: { type: String },
-      address: { type: String },
-      city: { type: String },
-      state: { type: String },
-      zip: { type: String },
-      phone: { type: String },
-      website: { type: String },
-      facebook: { type: String },
-      smallScreen: {type: Boolean },
+      image: { type: String }, // photo of the business
+      name: { type: String }, // business name
+      address: { type: String }, // business address
+      city: { type: String }, // business city
+      state: { type: String }, // business state
+      zip: { type: String }, // business zip code
+      phone: { type: String }, // business phone number
+      website: { type: String }, // business website address
+      facebook: { type: String }, // business facebook page
+      smallScreen: {type: Boolean }, // determines if the screen is considered mobile
     };
   }
 

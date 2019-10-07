@@ -104,17 +104,17 @@ export class PageMain extends LitElement {
 
   static get properties() {
     return {
-      title: { type: String },
-      businesses: { type: Object },
-      perPage: { type: Number },
-      totalPages: { type: Number },
-      currentPage: { type: Number },
-      userAddress: { type: Object },
-      checkedState: { type: Boolean },
-      checkedPostcode: { type: Boolean },
-      currentCategories: { type: Array },
-      nearByZipCodes: { type: Array },
-      shuffleInstance: { type: Object },
+      // title: { type: String },
+      businesses: { type: Object }, // business post data from WordPress
+      perPage: { type: Number }, // the number of businesses to show per Page
+      totalPages: { type: Number }, // the total number of pages for the businesses
+      currentPage: { type: Number }, // the current page of businesses
+      userAddress: { type: Object }, // user address info from reverse geocoding
+      checkedState: { type: Boolean }, // tracks if user is filtering by state
+      checkedPostcode: { type: Boolean }, // tracks if user is filtering by near by zipcodes
+      currentCategories: { type: Array }, // user selected categories as reported by <bobcatnav>
+      nearByZipCodes: { type: Array }, // near by zip codes returned from /nearbyzips/[ZIP]/[DISTANCE]
+      shuffleInstance: { type: Object }, // stores the shuffle.js instance
     };
   }
 
@@ -197,10 +197,7 @@ export class PageMain extends LitElement {
         ${locationFilters}
       </section>
 
-      <bob-catnav
-        @update-cat-filter=${this.filterCategories}
-        .shuffleInstance="${this.shuffleInstance}">
-      </bob-catnav>
+      <bob-catnav @update-cat-filter=${this.filterCategories}></bob-catnav>
 
       <section class="shuffle">
         ${businesses}
@@ -400,7 +397,7 @@ export class PageMain extends LitElement {
     if (this.currentPage < this.totalPages) {
       this.currentPage = this.currentPage + 1;
 
-      const url = `http://bob.hasanirogers.me/?rest_route=/wp/v2/business/&per_page=${this.perPage}&page=${this.currentPage}&_embed`;
+      const url = `http://bob.hasanirogers.me/wp-json/wp/v2/business/&per_page=${this.perPage}&page=${this.currentPage}&_embed`;
       const businesses = await fetch(url)
         .then(response => response.json());
 
@@ -430,7 +427,7 @@ export class PageMain extends LitElement {
    * Grabs the businesses and totalPage count from WordPress
    */
   async fetchBusinesses() {
-    const businesses = await fetch(`http://bob.hasanirogers.me/?rest_route=/wp/v2/business/&per_page=${this.perPage}&_embed`)
+    const businesses = await fetch(`http://bob.hasanirogers.me/wp-json/wp/v2/business/&per_page=${this.perPage}&_embed`)
       .then(response => {
         this.totalPages = response.headers.get('x-wp-totalpages');
         return response.json();
