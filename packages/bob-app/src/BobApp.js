@@ -88,15 +88,24 @@ export class BobApp extends LitElement {
   }
 
   render() {
-    return html`
-      ${sharedStyles}
-      <header>
-        <h1>Black Owned Businesses</h1>
+    let search;
+
+    // search block
+    if (this.page === 'main') {
+      search = html `
         <div>
           <paper-input @keyup="${(event) => {this.filterTitle(event)}}" placeholder="Search by name.">
             <div slot="suffix">${iconSearch}</div>
           </paper-input>
         </div>
+      `;
+    }
+
+    return html`
+      ${sharedStyles}
+      <header>
+        <h1>Black Owned Businesses</h1>
+        ${search}
       </header>
 
       <vaadin-tabs orientation="horizontal" selected="${this.tabs.indexOf(this.page)}" theme="centered">
@@ -132,6 +141,7 @@ export class BobApp extends LitElement {
    */
   switchRoute(route) {
     this.page = route;
+    if (route === '' || route === '/') this.page = 'main';
     Router.go(`/${route}`);
   }
 
