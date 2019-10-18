@@ -19,5 +19,18 @@ export const sharedStyles = html`
       margin: auto;
       border-top: 1px solid var(--bob-divider-color);
     }
+
+    .btn {
+      color: var(--bob-white);
+      font-weight: bold;
+      padding: 1rem 1.5rem;
+      border: 0;
+      border-radius: 6px;
+      background-color: var(--bob-primary-color);
+    }
+
+    .grid-span-all {
+      grid-column: 1/-1;
+    }
   </style>
 `;
