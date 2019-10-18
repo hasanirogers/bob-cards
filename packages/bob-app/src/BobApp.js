@@ -42,8 +42,14 @@ export class BobApp extends LitElement {
           padding: 0 1rem;
         }
 
-        header > h1 {
+        header > * {
           flex: 1;
+        }
+
+        header h1 {
+          font-style: italic;
+          letter-spacing: 1px;
+          margin: 0;
         }
 
         svg {
@@ -59,7 +65,7 @@ export class BobApp extends LitElement {
             flex-direction: row;
           }
 
-          header > div {
+          header > :last-child {
             max-width: 33%;
             flex: 0 0 33%;
           }
@@ -104,7 +110,10 @@ export class BobApp extends LitElement {
     return html`
       ${sharedStyles}
       <header>
-        <h1>Black Owned Businesses</h1>
+        <div>
+          <h1>Bob App</h1>
+          <aside>Bob's are Blacked Owned Business</aside>
+        </div>
         ${search}
       </header>
 

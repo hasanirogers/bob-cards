@@ -4,12 +4,12 @@ export class BobLoader extends LitElement {
   static get styles() {
     return css`
       :host {
-        display: none;
+        visibility: hidden;
         margin: 1rem auto;
       }
 
       :host([loading]) {
-        display: inline-block;
+        visibility: visible;
       }
 
       .lds-ripple {

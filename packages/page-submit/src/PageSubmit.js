@@ -36,6 +36,12 @@ export class PageSubmit extends LitElement {
         grid-template-columns: 1fr;
       }
 
+      bob-loader {
+        position: absolute;
+        right: -5rem;
+        top: -1.5rem;
+      }
+
       .btn {
         width: 100%;
       }
@@ -46,8 +52,21 @@ export class PageSubmit extends LitElement {
         grid-template-columns: 1fr;
       }
 
-      .send-business {
+      .send {
         text-align: center;
+      }
+
+      .send__required-msg {
+        color: var(--bob-error);
+      }
+
+      .send__success-msg {
+        color: var(--bob-success);
+      }
+
+      .send__loader {
+        display: inline-flex;
+        position: relative;
       }
 
       @media screen and (min-width: 769px) {
@@ -71,8 +90,11 @@ export class PageSubmit extends LitElement {
 
   static get properties() {
     return {
-      title: { type: String },
-      jwt: { type: Object },
+      title: { type: String }, // the title to the page
+      jwt: { type: Object }, // the jwt token from WordPress
+      formIsValid: { type: Boolean }, // tracks if the form has passed validation
+      showRequiredMSG: { type: Boolean }, // tracks whether or not to show an error msg
+      showSuccessMSG: { type: Boolean }, // tracks whether or not to show the successs msg
     };
   }
 
@@ -80,6 +102,9 @@ export class PageSubmit extends LitElement {
     super();
 
     this.title = 'Black owned business are dope. Send us one.';
+    this.formIsValid = false;
+    this.showRequiredMSG = false;
+    this.showSuccessMSG = false;
   }
 
   render() {
@@ -92,13 +117,18 @@ export class PageSubmit extends LitElement {
           <p>
             <label>
               <span>Business Name</span>
-              <paper-input name="business-name" label="Business Name" required></paper-input>
+              <paper-input
+                name="business-name"
+                label="Business Name"
+                auto-validate
+                required>
+              </paper-input>
             </label>
           </p>
           <p>
             <label>
               <span>Categories</span>
-              <multiselect-combo-box label="Select Categories"></multiselect-combo-box>
+              <multiselect-combo-box label="Select Categories" required></multiselect-combo-box>
             </label>
           </p>
           <div class="grid-span-all">
@@ -112,7 +142,13 @@ export class PageSubmit extends LitElement {
               <p>
                 <label>
                   <span>City</span>
-                  <paper-input name="city" label="City" required></paper-input>
+                  <paper-input
+                    name="city"
+                    label="City"
+                    allowed-pattern="[\ a-zA-z]"
+                    auto-validate
+                    required>
+                  </paper-input>
                 </label>
               </p>
               <p>
@@ -125,7 +161,14 @@ export class PageSubmit extends LitElement {
               <p>
                 <label>
                   <span>Zip</span>
-                  <paper-input name="zipcode" label="Zip Code" required></paper-input>
+                  <paper-input
+                    name="zipcode"
+                    label="Zip Code"
+                    allowed-pattern="[\ 0-9]"
+                    auto-validate
+                    maxlength="5"
+                    required>
+                  </paper-input>
                 </label>
               </p>
             </div>
@@ -133,7 +176,14 @@ export class PageSubmit extends LitElement {
           <p>
             <label>
               <span>Phone</span>
-              <paper-input name="phone" label="Phone" requied></paper-input>
+              <paper-input
+                name="phone"
+                label="Phone"
+                allowed-pattern="[\-.0-9]"
+                auto-validate
+                placeholder="ex: 555-555-5555"
+                required>
+              </paper-input>
             </label>
           </p>
           <p>
@@ -150,9 +200,17 @@ export class PageSubmit extends LitElement {
           </p>
         </section>
 
-        <div class="send-business">
-          <bob-loader></bob-loader>
-          <button class="btn" @click=${(event) => this.handleSubmit(event)}>Send Business</button>
+        <div class="send">
+          <p class="${this.showRequiredMSG ? 'send__required-msg' : 'send__required-msg hide'}">
+            Please fill out all required fields. If the field is red it is required.
+          </p>
+          <p class="${this.showSuccessMSG ? 'send__success-msg' : 'send__success-msg hide'}">
+            Thanks! Our team will review this business for approval.
+          </p>
+          <div class="send__loader">
+            <bob-loader></bob-loader>
+            <button class="btn" @click=${(event) => this.handleSubmit(event)}>Send Business</button>
+          </div>
         </div>
       </form>
     `;
@@ -163,10 +221,28 @@ export class PageSubmit extends LitElement {
     this.getCategories();
   }
 
-  getCategories() {
-    const multiselect = this.shadowRoot.querySelector('multiselect-combo-box');
+  validRequiredFields() {
+    const paperInputFields = this.shadowRoot.querySelectorAll('paper-input[required]');
+    const categoryField = this.shadowRoot.querySelector('multiselect-combo-box');
 
-    multiselect.items = ['Apple', 'Banana', 'Orange'];
+    let paperInputFieldsPassed = false;
+    let categoryFieldPassed = false;
+
+    Array.from(paperInputFields).forEach((field) => {
+        if (field.value.length > 2) {
+          paperInputFieldsPassed = true;
+        } else {
+          paperInputFieldsPassed = false;
+        }
+    });
+
+    if (categoryField.selectedItems.length !== 0) {
+      categoryFieldPassed = true;
+    } else {
+      categoryFieldPassed = false;
+    }
+
+    if (paperInputFieldsPassed && categoryFieldPassed) this.formIsValid = true;
   }
 
   handleSubmit(event) {
@@ -184,7 +260,7 @@ export class PageSubmit extends LitElement {
 
     const businessData = {
       name: name.value,
-      categories: categories.items,
+      categories: categories.selectedItems,
       address: address.value,
       city: city.value,
       state: state.value,
@@ -194,12 +270,19 @@ export class PageSubmit extends LitElement {
       facebook: facebook.value,
     }
 
-    this.postBusiness(businessData);
+    this.validRequiredFields();
+
+    if (this.formIsValid) {
+      this.postBusiness(businessData);
+    } else {
+      this.showRequiredMSG = true;
+    }
+
   }
 
   postBusiness(business) {
-    const categories = business.categories.map((category) => `<span>${category}</span>`);
     const loader = this.shadowRoot.querySelector('bob-loader');
+    const categories = business.categories.map((category) => `<span>${category}</span>`);
 
     const postData = {
       title: business.name,
@@ -231,8 +314,18 @@ export class PageSubmit extends LitElement {
       body: JSON.stringify(postData)
     })
     .then((data) => {
-      console.log('Request success: ', data);
-      loader.hideLoader();
+      if (data.statusText === 'Created') {
+        this.showRequiredMSG = false;
+        this.showSuccessMSG = true;
+
+        setTimeout(() => {
+          this.showSuccessMSG = false;
+        }, 6000);
+
+        loader.hideLoader();
+      } else {
+        console.log('There was a problem creating the business record', data);
+      }
     })
     .catch((error) => {
       console.log('Request failure: ', error);
@@ -254,4 +347,12 @@ export class PageSubmit extends LitElement {
   }
 
 
+  async getCategories() {
+    const multiselect = this.shadowRoot.querySelector('multiselect-combo-box');
+    const categories = await fetch(`http://${environments.prodip}/wp-json/wp/v2/categories`)
+      .then(response => response.json());
+
+    // grab only the name and make an array out of it
+    multiselect.items = categories.map((category) => category.name);
+  }
 }

@@ -17,16 +17,22 @@ export const sharedStyles = html`
       margin-top: 2rem;
       max-width: var(--bob-page-max-width);
       margin: auto;
+      padding: 0 1rem;
       border-top: 1px solid var(--bob-divider-color);
     }
 
     .btn {
       color: var(--bob-white);
       font-weight: bold;
+      cursor: pointer;
       padding: 1rem 1.5rem;
       border: 0;
       border-radius: 6px;
       background-color: var(--bob-primary-color);
+    }
+
+    .hide {
+      display: none;
     }
 
     .grid-span-all {

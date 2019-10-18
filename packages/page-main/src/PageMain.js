@@ -376,17 +376,10 @@ export class PageMain extends LitElement {
     const pageOffset = window.pageYOffset + window.innerHeight;
 
     if (pageOffset > shuffleBlockOffset) {
-      console.log('end of page scroll detected');
+      // console.log('end of page scroll detected');
       this.loadMoreCards();
     }
   }
-
-  /**
-   * Increments the current page and calls for more cards to be loaded
-   */
-  // loadMoreCards() {
-  //   this.loadCards();
-  // }
 
   /**
    * Handles the logic of fetching more cards and loading them into business object
