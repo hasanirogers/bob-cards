@@ -115,7 +115,7 @@ export class BobCatNav extends LitElement {
   }
 
   async getAllCategories() {
-    const categories = await fetch(`http://${environments.prodip}/wp-json/wp/v2/categories`)
+    const categories = await fetch(`https://${environments.prod}/wp-json/wp/v2/categories`)
       .then(response => response.json());
 
     this.categories = categories;

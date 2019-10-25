@@ -391,7 +391,7 @@ export class PageMain extends LitElement {
     if (this.currentPage < this.totalPages) {
       this.currentPage = this.currentPage + 1;
 
-      const url = `http://${environments.prodip}/wp-json/wp/v2/business?per_page=${this.perPage}&page=${this.currentPage}&_embed`;
+      const url = `https://${environments.prod}/wp-json/wp/v2/business?per_page=${this.perPage}&page=${this.currentPage}&_embed`;
       const businesses = await fetch(url)
         .then(response => response.json());
 
@@ -421,7 +421,7 @@ export class PageMain extends LitElement {
    * Grabs the businesses and totalPage count from WordPress
    */
   async fetchBusinesses() {
-    const businesses = await fetch(`http://${environments.prodip}/wp-json/wp/v2/business?per_page=${this.perPage}&_embed`)
+    const businesses = await fetch(`https://${environments.prod}/wp-json/wp/v2/business?per_page=${this.perPage}&_embed`)
       .then(response => {
         this.totalPages = response.headers.get('x-wp-totalpages');
         return response.json();

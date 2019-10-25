@@ -305,7 +305,7 @@ export class PageSubmit extends LitElement {
 
     loader.showLoader();
 
-    fetch(`http://${environments.prodip}/wp-json/wp/v2/business`, {
+    fetch(`https://${environments.prod}/wp-json/wp/v2/business`, {
       method: 'POST',
       headers: new Headers({
         'Content-Type': 'application/json',
@@ -335,7 +335,7 @@ export class PageSubmit extends LitElement {
 
   // reference: https://wordpress.stackexchange.com/questions/333728/how-to-authenticate-wp-rest-api-with-jwt-authentication-using-fetch-api
   async getJWT() {
-    const token = await fetch(`http://${environments.prodip}/wp-json/jwt-auth/v1/token`, {
+    const token = await fetch(`https://${environments.prod}/wp-json/jwt-auth/v1/token`, {
       method: 'POST',
       body: JSON.stringify(credentials),
       headers: { 'Content-Type': 'application/json' }
@@ -349,7 +349,7 @@ export class PageSubmit extends LitElement {
 
   async getCategories() {
     const multiselect = this.shadowRoot.querySelector('multiselect-combo-box');
-    const categories = await fetch(`http://${environments.prodip}/wp-json/wp/v2/categories`)
+    const categories = await fetch(`https://${environments.prod}/wp-json/wp/v2/categories`)
       .then(response => response.json());
 
     // grab only the name and make an array out of it

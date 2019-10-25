@@ -20,7 +20,8 @@
     "build": "webpack --mode production",
     "start": "es-dev-server --app-index index.html --node-resolve --open --watch",
     "start:express": "webpack --mode production && node server/bin/www",
-    "start:compatibility": "es-dev-server --app-index index.html --compatibility all --node-resolve --open --watch"
+    "start:compatibility": "es-dev-server --app-index index.html --compatibility all --node-resolve --open --watch",
+    "start:production": "webpack --mode production && forever start server/bin/www"
   },
   "devDependencies": {
     "@open-wc/eslint-config": "^1.0.0",
@@ -56,10 +57,10 @@
       "git add"
     ]
   },
-  "name": "bob-app",
+  "name": "bob-cards",
   "version": "0.0.0",
-  "description": "Webcomponent bob-app following open-wc recommendations",
-  "author": "bob-app",
+  "description": "Bobs are Black Owned Businesses",
+  "author": "Hasani Rogers <hasani.rogers@gmail.com>",
   "license": "MIT",
   "dependencies": {
     "@polymer/paper-checkbox": "^3.1.0",

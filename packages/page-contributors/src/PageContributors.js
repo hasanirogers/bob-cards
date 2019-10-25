@@ -110,7 +110,7 @@ export class PageContributors extends LitElement {
   }
 
   async fetchContributors() {
-    const contributors = await fetch(`http://${environments.prodip}/wp-json/wp/v2/contributor?per_page=99&_embed`)
+    const contributors = await fetch(`https://${environments.prod}/wp-json/wp/v2/contributor?per_page=99&_embed`)
       .then(response => response.json());
 
     this.contributors = contributors;
