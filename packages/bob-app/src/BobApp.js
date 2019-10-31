@@ -47,6 +47,7 @@ export class BobApp extends LitElement {
         }
 
         header h1 {
+          color: var(--bob-white);
           font-style: italic;
           letter-spacing: 1px;
           margin: 0;
@@ -111,8 +112,8 @@ export class BobApp extends LitElement {
       ${sharedStyles}
       <header>
         <div>
-          <h1>Bob App</h1>
-          <aside>Bob's are Blacked Owned Business</aside>
+          <h1>Bob Cards</h1>
+          <aside>Bob's are blacked owned business.</aside>
         </div>
         ${search}
       </header>
