@@ -16,6 +16,7 @@ import '../../page-contributors/page-contributors.js';
 
 import {
   iconSearch,
+  iconApp,
 } from './imagesSvg.js';
 
 
@@ -25,6 +26,7 @@ export class BobApp extends LitElement {
     return [
       css`
         vaadin-tabs {
+          margin-top: 2rem;
           border-bottom: 1px solid #404040;
         }
 
@@ -53,15 +55,28 @@ export class BobApp extends LitElement {
           margin: 0;
         }
 
-        svg {
-          fill: var(--primary-text-color);
+        .logo {
+          display: flex;
+          padding: 1rem 0;
+          align-items: center;
+        }
+
+        #iconApp {
+          width: 54px;
+          height: 54px;
+          margin-right: 0.5rem;
         }
 
         #iconSearch {
           width: 24px;
+          fill: var(--primary-text-color);
         }
 
         @media screen and (min-width: 769px) {
+          vaadin-tabs {
+            margin-top: 0;
+          }
+
           header {
             flex-direction: row;
           }
@@ -111,9 +126,12 @@ export class BobApp extends LitElement {
     return html`
       ${sharedStyles}
       <header>
-        <div>
-          <h1>Bob Cards</h1>
-          <aside>Bob's are blacked owned business.</aside>
+        <div class="logo">
+          <div>${iconApp}</div>
+          <div>
+            <h1>Bob Cards</h1>
+            <aside>Bob's are blacked owned business.</aside>
+          </div>
         </div>
         ${search}
       </header>
