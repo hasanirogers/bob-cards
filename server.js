@@ -4,6 +4,7 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 
 const zipcodes = require('./server/routes/nearbyzips');
+const catchall = require('./server/routes/catchall');
 
 const app = express();
 
@@ -27,5 +28,6 @@ app.use(express.static(path.join(__dirname, 'dist')));
 // app.use('/assets', express.static(path.join(__dirname, 'server/assets')));
 
 app.use('/nearbyzips', zipcodes);
+app.use('/*', catchall);
 
 module.exports = app;
