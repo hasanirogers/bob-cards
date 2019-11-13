@@ -1,5 +1,6 @@
-export const environments = {
-  local: 'bob.hasanirogers.local',
+const environments = {
+  local: 'api.bobcards.local',
   prod: 'api.bobcards.app:4434',
-  prodip: '198.71.53.133:4434',
 }
+
+export const currentEnv = environments.prod;

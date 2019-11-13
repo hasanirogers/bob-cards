@@ -1,7 +1,7 @@
 import { html, css, LitElement } from 'lit-element';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { sharedStyles } from '../../bob-app/src/stylesShared.js';
-import { environments } from '../../bob-app/src/env.js';
+import { currentEnv } from '../../bob-app/src/env.js';
 
 export class PageContributors extends LitElement {
   static get styles() {
@@ -110,7 +110,7 @@ export class PageContributors extends LitElement {
   }
 
   async fetchContributors() {
-    const contributors = await fetch(`https://${environments.prod}/wp-json/wp/v2/contributor?per_page=99&_embed`)
+    const contributors = await fetch(`https://${currentEnv}/wp-json/wp/v2/contributor?per_page=99&_embed`)
       .then(response => response.json());
 
     this.contributors = contributors;

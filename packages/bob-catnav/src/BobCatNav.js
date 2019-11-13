@@ -1,7 +1,7 @@
 /* eslint-disable class-methods-use-this */
 
 import { html, css, LitElement } from 'lit-element';
-import { environments } from '../../bob-app/src/env.js'
+import { currentEnv } from '../../bob-app/src/env.js'
 
 
 export class BobCatNav extends LitElement {
@@ -115,7 +115,7 @@ export class BobCatNav extends LitElement {
   }
 
   async getAllCategories() {
-    const categories = await fetch(`https://${environments.prod}/wp-json/wp/v2/categories`)
+    const categories = await fetch(`https://${currentEnv}/wp-json/wp/v2/categories`)
       .then(response => response.json());
 
     this.categories = categories;

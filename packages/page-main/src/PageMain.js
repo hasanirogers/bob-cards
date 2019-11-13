@@ -8,7 +8,7 @@ import Shuffle from 'shufflejs/dist/shuffle.esm.js';
 import '@polymer/paper-checkbox/paper-checkbox.js';
 import '@polymer/paper-toggle-button/paper-toggle-button.js';
 
-import { environments } from '../../bob-app/src/env.js'
+import { currentEnv } from '../../bob-app/src/env.js'
 import '../../bob-card/bob-card.js';
 import '../../bob-catnav/bob-catnav.js';
 
@@ -391,7 +391,7 @@ export class PageMain extends LitElement {
     if (this.currentPage < this.totalPages) {
       this.currentPage = this.currentPage + 1;
 
-      const url = `https://${environments.prod}/wp-json/wp/v2/business?per_page=${this.perPage}&page=${this.currentPage}&_embed`;
+      const url = `https://${currentEnv}/wp-json/wp/v2/business?per_page=${this.perPage}&page=${this.currentPage}&_embed`;
       const businesses = await fetch(url)
         .then(response => response.json());
 
@@ -421,7 +421,7 @@ export class PageMain extends LitElement {
    * Grabs the businesses and totalPage count from WordPress
    */
   async fetchBusinesses() {
-    const businesses = await fetch(`https://${environments.prod}/wp-json/wp/v2/business?per_page=${this.perPage}&_embed`)
+    const businesses = await fetch(`https://${currentEnv}/wp-json/wp/v2/business?per_page=${this.perPage}&_embed`)
       .then(response => {
         this.totalPages = response.headers.get('x-wp-totalpages');
         return response.json();
