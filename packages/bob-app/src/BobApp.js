@@ -156,10 +156,25 @@ export class BobApp extends LitElement {
 
     // this is the configuration of the routes
     router.setRoutes([
-      {path: '/', component: 'page-main'},
-      {path: '/submit', name: 'submit', component: 'page-submit'},
-      {path: '/contributors', name: 'contributors', component: 'page-contributors'},
-      {path: '(.*)', redirect: '/main', action: () => { this.page = 'main'; }}
+      {
+        path: '/',
+        component: 'page-main'
+      },
+      {
+        path: '/submit',
+        name: 'submit',
+        component: 'page-submit'
+      },
+      {
+        path: '/contributors',
+        name: 'contributors',
+        component: 'page-contributors'
+      },
+      {
+        path: '(.*)',
+        redirect: '/',
+        action: () => { this.page = 'main'; }
+      }
     ]);
   }
 
