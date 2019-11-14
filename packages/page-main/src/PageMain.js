@@ -23,6 +23,11 @@ export class PageMain extends LitElement {
         display: flex;
       }
 
+      .no-businesses {
+        margin: auto;
+        padding: 0 1rem 2rem;
+      }
+
       .shuffle {
         margin: 0 1rem;
         /* height: auto; */
@@ -116,6 +121,7 @@ export class PageMain extends LitElement {
       currentCategories: { type: Array }, // user selected categories as reported by <bobcatnav>
       nearByZipCodes: { type: Array }, // near by zip codes returned from /nearbyzips/[ZIP]/[DISTANCE]
       shuffleInstance: { type: Object }, // stores the shuffle.js instance
+      noBusinessMsg: { type: Boolean }, // determines whether or not to display no business message
     };
   }
 
@@ -127,6 +133,7 @@ export class PageMain extends LitElement {
     this.checkedState = true;
     this.checkedPostcode = false;
     this.currentCategories = [];
+    this.noBusinessMsg = false;
   }
 
   render() {
@@ -134,6 +141,13 @@ export class PageMain extends LitElement {
     let userStateFilter;
     let locationFilters;
     let businesses;
+    let noBusinessMsg;
+
+    if (this.noBusinessMsg) {
+      noBusinessMsg = html `
+        <p class="no-businesses">Sorry. We can't find any business that meets your search results. It's possible that there are no businesses listed in your area yet. 😞</p>
+      `;
+    }
 
     if (this.nearByZipCodes) {
       userPostcodeFilter = html `
@@ -200,6 +214,8 @@ export class PageMain extends LitElement {
 
       <bob-catnav @update-cat-filter=${this.filterCategories}></bob-catnav>
 
+      ${noBusinessMsg}
+
       <section class="shuffle">
         ${businesses}
       </section>
@@ -224,7 +240,17 @@ export class PageMain extends LitElement {
     setTimeout(() => {
       this.shuffleInstance.resetItems();
       this.shuffleInstance.update();
+      this.displayNoBusinessMsg();
     }, 1);
+  }
+
+
+  displayNoBusinessMsg() {
+    if (this.shuffleInstance && this.shuffleInstance.visibleItems === 0 && this.businesses.length > 0) {
+      this.noBusinessMsg = true;
+    } else {
+      this.noBusinessMsg = false;
+    }
   }
 
   /**
