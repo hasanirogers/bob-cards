@@ -294,6 +294,8 @@ export class PageMain extends LitElement {
    */
   filterState(event) {
     if (event) {
+      this.currentPage = 0;
+      this.fetchBusinesses();
       this.checkedState = event.path[0].checked;
     }
 
