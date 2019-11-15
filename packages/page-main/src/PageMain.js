@@ -178,6 +178,7 @@ export class PageMain extends LitElement {
     if (this.businesses.length > 0) {
       businesses = this.businesses.map((business) => {
         const categories = (business.acf) ? this.getCatArray(business.acf.categories) : '';
+        const state = (business._embedded && business._embedded['wp:term'][1][0].name) ? business._embedded['wp:term'][1][0].name : '';
 
         return html `
           <figure
@@ -185,14 +186,14 @@ export class PageMain extends LitElement {
             title="${business.title.rendered}"
             data-groups="${categories}"
             data-city="${business.acf.city}"
-            data-state="${business.acf.state.name}"
+            data-state="${state}"
             data-postcode="${business.acf.zip}">
             <bob-card
               name="${business.title.rendered}"
               image="${business.acf.cardImage ? business.acf.cardImage.url : ''}"
               address="${business.acf.address}"
               city="${business.acf.city}"
-              state="${business.acf.state.name}"
+              state="${state}"
               zip="${business.acf.zip}"
               phone="${business.acf.phone}"
               website="${business.acf.website}"
@@ -230,7 +231,7 @@ export class PageMain extends LitElement {
     });
 
     this.getLocation();
-    this.fetchBusinesses();
+    // this.fetchBusinesses();
 
     window.addEventListener('scroll', () => this.handleScroll());
   }
@@ -388,6 +389,9 @@ export class PageMain extends LitElement {
    * @param {Object} error
    */
   getLocationError(error) {
+    // if they decline to share a location fetch businesses without any address info
+    this.fetchBusinesses();
+
     console.log('error', error);
     this.shuffleInstance.resetItems();
     this.shuffleInstance.update();
@@ -414,10 +418,12 @@ export class PageMain extends LitElement {
     // console.log('current page', this.currentPage);
     // console.log('total pages', this.totalPages);
 
+    const stateFilter = (this.checkedState && this.userAddress) ? `&filter[taxonomy]=states&filter[term]=${this.userAddress.address.state}` : '';
+
     if (this.currentPage < this.totalPages) {
       this.currentPage = this.currentPage + 1;
 
-      const url = `${protocol}//${currentEnv}/wp-json/wp/v2/business?per_page=${this.perPage}&page=${this.currentPage}&_embed`;
+      const url = `${protocol}//${currentEnv}/wp-json/wp/v2/business?per_page=${this.perPage}&page=${this.currentPage}${stateFilter}&_embed`;
       const businesses = await fetch(url)
         .then(response => response.json());
 
@@ -436,6 +442,9 @@ export class PageMain extends LitElement {
 
     this.userAddress = address;
 
+    // fetch businesses after we get an address
+    this.fetchBusinesses();
+
     // apply the state filter as soon as we have an address
     this.filterState();
 
@@ -447,7 +456,9 @@ export class PageMain extends LitElement {
    * Grabs the businesses and totalPage count from WordPress
    */
   async fetchBusinesses() {
-    const businesses = await fetch(`${protocol}//${currentEnv}/wp-json/wp/v2/business?per_page=${this.perPage}&_embed`)
+    const stateFilter = (this.checkedState && this.userAddress) ? `&filter[taxonomy]=states&filter[term]=${this.userAddress.address.state}` : '';
+
+    const businesses = await fetch(`${protocol}//${currentEnv}/wp-json/wp/v2/business?per_page=${this.perPage}${stateFilter}&_embed`)
       .then(response => {
         this.totalPages = response.headers.get('x-wp-totalpages');
         return response.json();
