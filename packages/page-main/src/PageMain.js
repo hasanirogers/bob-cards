@@ -11,6 +11,8 @@ import '@polymer/paper-toggle-button/paper-toggle-button.js';
 import { currentEnv, protocol } from '../../bob-app/src/env.js'
 import '../../bob-card/bob-card.js';
 import '../../bob-catnav/bob-catnav.js';
+import '../../bob-loader/bob-loader.js';
+
 
 export class PageMain extends LitElement {
   static get styles() {
@@ -23,9 +25,15 @@ export class PageMain extends LitElement {
         display: flex;
       }
 
+      bob-loader {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+      }
+
       .messages {
         margin: auto;
-        padding: 0 1rem 2rem;
+        padding: 0 1rem;
       }
 
       .messages__too-many-filters,
@@ -225,6 +233,8 @@ export class PageMain extends LitElement {
         <p class="messages__none-in-state ${this.businesses.length === 0 && this.fetchBusinessesSet ? 'messages__none-in-state--show' : ''}">Looks like we haven't added any businesses in your state yet. Try turning off state filtering.</p>
       </section>
 
+      <bob-loader></bob-loader>
+
       <section class="shuffle">
         ${businesses}
       </section>
@@ -233,13 +243,14 @@ export class PageMain extends LitElement {
 
   firstUpdated() {
     const shuffleElement = this.shadowRoot.querySelector('.shuffle');
+    const loader = this.shadowRoot.querySelector('bob-loader');
 
     this.shuffleInstance = new Shuffle(shuffleElement, {
       itemSelector: '.shuffle__item'
     });
 
+    loader.showLoader();
     this.getLocation();
-    // this.fetchBusinesses();
 
     window.addEventListener('scroll', () => this.handleScroll());
   }
@@ -466,6 +477,7 @@ export class PageMain extends LitElement {
    * Grabs the businesses and totalPage count from WordPress
    */
   async fetchBusinesses() {
+    const loader = this.shadowRoot.querySelector('bob-loader');
     const stateFilter = (this.checkedState && this.userAddress) ? `&filter[taxonomy]=states&filter[term]=${this.userAddress.address.state}` : '';
 
     const businesses = await fetch(`${protocol}//${currentEnv}/wp-json/wp/v2/business?per_page=${this.perPage}${stateFilter}&_embed`)
@@ -475,6 +487,7 @@ export class PageMain extends LitElement {
       });
 
     this.businesses = businesses;
+    loader.hideLoader();
     this.fetchBusinessesSet = true;
   }
 
