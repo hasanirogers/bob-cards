@@ -207,8 +207,6 @@ export class PageMain extends LitElement {
           </figure>
         `;
       });
-    } else {
-      businesses = html`<p>NOPE</p>`;
     }
 
     return html`
