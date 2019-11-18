@@ -224,7 +224,7 @@ export class PageMain extends LitElement {
 
       <section class="messages">
         <p class="messages__too-many-filters ${this.tooManyFiltersMsg ? 'messages__too-many-filters--show' : ''}">Sorry. We can't find any business that meets your current filters. 😞</p>
-        <p class="messages__none-in-state ${this.businesses.length === 0 && this.fetchBusinessesSet ? 'messages__none-in-state--show' : ''}">Looks like we haven't added any businesses in your state yet. Click the arrow above to turn off state filtering.</p>
+        <p class="messages__none-in-state ${this.businesses.length === 0 && this.fetchBusinessesSet ? 'messages__none-in-state--show' : ''}">Looks like we haven't added any businesses in your state yet. Try turning off state filtering.</p>
       </section>
 
       <section class="shuffle">
@@ -304,9 +304,9 @@ export class PageMain extends LitElement {
    */
   filterState(event) {
     if (event) {
+      this.checkedState = event.path[0].checked;
       this.currentPage = 0;
       this.fetchBusinesses();
-      this.checkedState = event.path[0].checked;
     }
 
     this.shuffleInstance.filter((element) => this.filterAllItems(element));
