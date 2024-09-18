@@ -1,0 +1,40 @@
+@use 'node_modules/kemet-ui/dist/styles/kemet.base';
+
+:root {
+  --app-page-width: 1280px;
+  --app-color: var(--kemet-color-gray-300);
+  --app-border: 1px solid rgb(var(--kemet-color-gray-700));
+  --app-background-color: var(--kemet-color-gray-900);
+
+  --kemet-color-text: var(--app-color);
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --app-color: var(--kemet-color-gray-900);
+    --app-background-color: var(--kemet-color-gray-200);
+  }
+}
+
+html {
+  font-family: "Montserrat", sans-serif;
+  font-optical-sizing: auto;
+  font-style: normal;
+  line-height: 1.5;
+  font-weight: 400;
+  font-synthesis: none;
+
+  color: rgb(var(--app-color));
+  background-color: rgb(var(--app-background-color));
+  margin: 0;
+  padding: 0;
+
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}
