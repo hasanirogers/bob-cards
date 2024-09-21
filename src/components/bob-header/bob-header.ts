@@ -1,9 +1,8 @@
 import { LitElement, html } from 'lit';
 import { customElement } from 'lit/decorators.js';
 import { switchRoute } from '../../shared/utilities';
-import styles from './styles';
 import SVGHandshake from '../../assets/handshake.svg';
-
+import styles from './styles';
 import '../bob-header-nav/bob-header-nav';
 
 @customElement('bob-header')

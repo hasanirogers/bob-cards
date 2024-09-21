@@ -203,6 +203,11 @@ export class BobLogin extends LitElement {
           }
 
           this.alert.opened = true;
+      })
+      .catch(() => {
+        this.alert.opened = true;
+        this.alert.status = 'error';
+        this.alertMessage = 'There was an unknown problem while registering.';
       });
   }
 

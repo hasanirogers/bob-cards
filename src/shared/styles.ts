@@ -1,6 +1,23 @@
 import { css } from 'lit';
 
 export default css`
+  button {
+    cursor: pointer;
+    color: inherit;
+    border: 0;
+    background: none;
+  }
+
+  fieldset {
+    border: none;
+  }
+
+  legend {
+    padding: 0;
+    margin: 0;
+    font-size: 2rem;
+  }
+
   kemet-alert {
     position: fixed;
     top: 2rem;
