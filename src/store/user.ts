@@ -42,7 +42,7 @@ const profileResponse = await getProfile();
 const store = createStore<IUserStore>(set => ({
   user: Cookies.get('bob-user') ? JSON.parse(Cookies.get('bob-user') || '') : {},
   profile: profileResponse?.profile,
-  updateProfile: (profile: any) => set(() => profile ),
+  updateProfile: (profile: any) => set(() => { return {profile} }),
   isLoggedIn: !!Cookies.get('bob-user'),
   login: (loginData) => set(() => {
     Cookies.set('bob-user', JSON.stringify(loginData), { expires: 7 });

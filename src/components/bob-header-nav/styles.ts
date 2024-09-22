@@ -8,6 +8,7 @@ export default css`
   section {
     display: flex;
     gap: 1rem;
+    align-items: center;
     text-align: right;
   }
 `;

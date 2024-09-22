@@ -20,6 +20,16 @@ export default css`
     margin-top: 1rem;
   }
 
+  .profile {
+    display: grid;
+    grid-template-columns: 1fr 1.25fr;
+    gap: 8vw;
+    align-items: center;
+    margin: 2vw 4vw;
+    padding: 4vw;
+    border: var(--app-border);
+  }
+
   .profile-image {
     text-align: center;
     position: relative;

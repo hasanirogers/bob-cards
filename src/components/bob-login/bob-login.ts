@@ -76,7 +76,7 @@ export class BobLogin extends LitElement {
                 </kemet-field>
               </p>
               <p>
-                <kemet-field>
+                <kemet-field label="Password">
                   <kemet-input required slot="input" type="password" name="password" validate-on-blur></kemet-input>
                 </kemet-field>
               </p>

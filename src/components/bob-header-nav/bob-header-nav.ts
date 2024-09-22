@@ -16,6 +16,7 @@ export default class BobHeaderNav extends LitElement {
     super();
     userStore.subscribe((state) => {
       this.userState = state;
+      console.log(this.userState.profile);
     });
   }
 
@@ -34,9 +35,9 @@ export default class BobHeaderNav extends LitElement {
           </div>
           <button @click=${() => switchRoute('profile', 'BobCards | Profile')}>
             ${
-              this.userState.profile.meta.bob_profile_image
+              !!this.userState.profile.meta.bob_profile_image[0]
                 ? html`<div class="profile-picture" style="background-image: url('${this.userState.profile.meta.bob_profile_image}}')"></div>`
-                : html`<kemet-avatar><kemet-icon size="48" icon="person"></kemet-icon></kemet-avatar>`
+                : html`<kemet-avatar circle><kemet-icon size="40" icon="person"></kemet-icon></kemet-avatar>`
             }
           </button>
         </section>

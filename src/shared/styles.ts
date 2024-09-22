@@ -13,12 +13,21 @@ export default css`
 
   fieldset {
     border: none;
+    padding: 0;
   }
 
   legend {
+    font-size: 2rem;
+    width: 100%;
     padding: 0;
     margin: 0;
-    font-size: 2rem;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: var(--app-border);
+  }
+
+  hr {
+    opacity: 0.25;
   }
 
   kemet-alert {
@@ -40,6 +49,11 @@ export default css`
 
     display: block;
     margin: 2rem auto;
+  }
+
+  kemet-avatar {
+    color: rgb(var(--app-background-color));
+    padding: 8px;
   }
 
   ::part(input) {
