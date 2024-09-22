@@ -17,15 +17,22 @@ import FilePondImagePreviewStyles from 'filepond-plugin-image-preview/dist/filep
 
 const API_URL = import.meta.env.VITE_API_URL;
 
+FilePond.registerPlugin(
+  FilePondPluginFileEncode,
+  FilePondPluginFileValidateType,
+  FilePondPluginImageExifOrientation,
+  FilePondPluginImagePreview,
+  FilePondPluginImageCrop,
+  FilePondPluginImageResize,
+  FilePondPluginImageTransform
+);
+
 @customElement('bob-profile')
 export default class BobProfile extends LitElement {
   static styles = [styles, sharedStyles, FilePondStyles, FilePondImagePreviewStyles];
 
   @state()
   userState: IUserStore = userStore.getInitialState();
-
-  @state()
-  profile: any = {};
 
   @state()
   filePond: any;
@@ -39,9 +46,8 @@ export default class BobProfile extends LitElement {
   @query('input[name=filepond]')
   profileInput!: HTMLInputElement;
 
-  firstUpdated() {
-    this.getProfile();
-  }
+  @query('.filepond--root')
+  filePondRoot!: any;
 
   updated(changedProperties: any) {
     if (changedProperties.has('showUploadProfileImage') && this.showUploadProfileImage) {
@@ -58,7 +64,7 @@ export default class BobProfile extends LitElement {
             <div class="profile-image">${this.makeProfileImage()}</div>
             <p>
               <kemet-field label="First Name">
-                <kemet-input slot="input" name="first_name" rounded value=${this.profile.first_name}></kemet-input>
+                <kemet-input slot="input" name="first_name" rounded value=${this.userState?.profile?.first_name}></kemet-input>
               </kemet-field>
             </p>
             <br />
@@ -72,16 +78,6 @@ export default class BobProfile extends LitElement {
   }
 
   initFilePond() {
-    FilePond.registerPlugin(
-      FilePondPluginFileEncode,
-      FilePondPluginFileValidateType,
-      FilePondPluginImageExifOrientation,
-      FilePondPluginImagePreview,
-      FilePondPluginImageCrop,
-      FilePondPluginImageResize,
-      FilePondPluginImageTransform
-    );
-
     this.filePond = FilePond.create(this.profileInput, {
       labelIdle: `Drag & Drop your picture or <span class="filepond--label-action">Browse</span>`,
       imagePreviewHeight: 170,
@@ -95,12 +91,12 @@ export default class BobProfile extends LitElement {
   }
 
   makeProfileImage() {
-    const profileImage = this.profile?.meta?.bob_profile_image['0'];
+    const profileImage = this.userState.profile?.meta?.bob_profile_image['0'];
 
     if (profileImage && !this.showUploadProfileImage) {
       return html`
         <button class="image" @click=${() => this.showUploadProfileImage = true}>
-          <img class="profile" src="${profileImage}" alt="Profile Image" />
+          <div class="profile-picture" style="background-image: url('${profileImage}')"></div>
         </button>
         <button class="delete" aria-label="delete" @click=${(event: SubmitEvent) => this.deleteProfileImage(event)}>
           <kemet-icon icon="trash" size="32"></kemet-icon>
@@ -108,33 +104,12 @@ export default class BobProfile extends LitElement {
       `;
     }
 
-    this.initFilePond();
+    this.showUploadProfileImage = true;
 
     return html`
       ${profileImage ? html`<button class="close" @click=${() => this.showUploadProfileImage = false} aria-label="delete"><kemet-icon icon="x-lg" size="32"></kemet-icon></button>` : ''}
       <input type="file" class="filepond" name="filepond" accept="image/png, image/jpeg, image/gif"/>
     `;
-  }
-
-  async getProfile() {
-    if (!this.userState.user.user_id) {
-      return;
-    }
-
-    const options = {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${this.userState.user.token}`
-      }
-    };
-
-    const userProfile = await fetch(`${API_URL}/wp-json/wp/v2/users/${this.userState.user.user_id.toString()}?context=edit`, options)
-      .then((response) => response.json());
-
-    this.profile = userProfile;
-
-    console.log(this.profile);
   }
 
   async updateProfile(event: SubmitEvent) {
@@ -159,15 +134,16 @@ export default class BobProfile extends LitElement {
 
     const endpoint = this.userForm.getAttribute('action');
 
-    await fetch(`${API_URL}/${endpoint}/${this.userState.user.user_id.toString()}?context=edit`, options)
+    const profile = await fetch(`${API_URL}/${endpoint}/${this.userState.user.user_id.toString()}?context=edit`, options)
       .then((response) => response.json())
       .catch((error) => console.error(error));
 
+    this.userState.updateProfile(profile);
 
     // Upload Media
     // ---------------
 
-    const hasFile = !!this.filePond.getFile()?.file;
+    const hasFile = !!this.filePond?.getFile()?.file;
     const uploadFormData = new FormData();
 
     if (hasFile) {
@@ -216,7 +192,7 @@ export default class BobProfile extends LitElement {
   async deleteProfileImage(event: SubmitEvent) {
     event.preventDefault();
     this.showUploadProfileImage = true;
-    this.profile.meta.bob_profile_image[0] = '';
+    this.userState.profile.meta.bob_profile_image[0] = '';
 
     const options = {
       method: 'POST',
@@ -225,7 +201,7 @@ export default class BobProfile extends LitElement {
         'Authorization': `Bearer ${this.userState.user.token}`
       },
       body: JSON.stringify({
-        image_id: this.profile.meta.bob_profile_image_id[0],
+        image_id: this.userState.profile.meta.bob_profile_image_id[0],
         user_id: this.userState.user.user_id
       })
     }

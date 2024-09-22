@@ -5,7 +5,9 @@ export default css`
     display: block;
   }
 
-  nav {
+  section {
     display: flex;
+    gap: 1rem;
+    text-align: right;
   }
 `;

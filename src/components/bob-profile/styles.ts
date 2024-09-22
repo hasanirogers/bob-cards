@@ -5,11 +5,6 @@ export default css`
     display: block;
   }
 
-  img.profile {
-    width: 100%;
-    border-radius: 50%;
-  }
-
   button.image {
     width: 100%;
   }

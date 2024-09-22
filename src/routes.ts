@@ -7,17 +7,19 @@ const redirectHomeWhenLoggedIn = () => {
   if (userState.isLoggedIn) {
     switchRoute('home');
   }
+  return;
 }
 
 const redirectHomeWhenNotLoggedIn = () => {
   if (!userState.isLoggedIn) {
     switchRoute('home');
   }
+  return;
 }
 
 export default [
   { path: '/', component: 'bob-home' },
   { path: '/home', component: 'bob-home' },
-  { path: '/profile', component: 'bob-profile', redirectHomeWhenNotLoggedIn },
+  { path: '/profile', component: 'bob-profile', action: redirectHomeWhenNotLoggedIn },
   { path: '/login', component: 'bob-login', action: redirectHomeWhenLoggedIn }
 ];

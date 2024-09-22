@@ -3,10 +3,11 @@ import { customElement, state } from 'lit/decorators.js';
 import { switchRoute } from '../../shared/utilities.ts';
 import userStore, { IUserStore } from '../../store/user';
 import styles from './styles';
+import sharedStyles from '../../shared/styles';
 
 @customElement('bob-header-nav')
 export default class BobHeaderNav extends LitElement {
-  static styles = [styles];
+  static styles = [styles, sharedStyles];
 
   @state()
   userState: IUserStore = userStore.getInitialState();
@@ -25,12 +26,20 @@ export default class BobHeaderNav extends LitElement {
   makeNav() {
     if (this.userState.isLoggedIn) {
       return html`
-        <nav>
-          <kemet-button variant="text">My&nbsp;Business</kemet-button>
-          <kemet-button variant="text">Add&nbsp;Business</kemet-button>
-          <kemet-button variant="text" @click=${() => switchRoute('profile', 'BobCards | Profile')}>Profile</kemet-button>
-          <kemet-button variant="text" @click=${() => this.userState.logout()}>Log&nbsp;Out</kemet-button>
-        </nav>
+        <section>
+          <div>
+            Welcome ${this.userState.profile.first_name},
+            <br />
+            <button variant="text" @click=${() => { this.userState.logout(); switchRoute('home'); }}>Log&nbsp;Out</button>
+          </div>
+          <button @click=${() => switchRoute('profile', 'BobCards | Profile')}>
+            ${
+              this.userState.profile.meta.bob_profile_image
+                ? html`<div class="profile-picture" style="background-image: url('${this.userState.profile.meta.bob_profile_image}}')"></div>`
+                : html`<kemet-avatar><kemet-icon size="48" icon="person"></kemet-icon></kemet-avatar>`
+            }
+          </button>
+        </section>
       `;
     } else {
       return html`

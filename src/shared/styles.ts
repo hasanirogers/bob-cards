@@ -4,6 +4,9 @@ export default css`
   button {
     cursor: pointer;
     color: inherit;
+    font-size: inherit;
+    padding: 0;
+    margin: 0;
     border: 0;
     background: none;
   }
@@ -41,5 +44,14 @@ export default css`
 
   ::part(input) {
     outline-offset: 6px;
+  }
+
+  .profile-picture {
+    aspect-ratio: 1 / 1;
+    min-width: 48px;
+    border-radius: 50%;
+    background-size: 100% auto;
+    background-position: center;
+    background-repeat: no-repeat;
   }
 `;

@@ -10,7 +10,14 @@ const styles = css`
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 1rem;
+    padding: 0 1rem;
+  }
+
+  nav,
+  header > div {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
   }
 
   h1 {
