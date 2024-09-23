@@ -30,13 +30,32 @@ export default css`
     opacity: 0.25;
   }
 
+  a[href*='lostpassword'] {
+    display: none;
+  }
+
   kemet-alert {
+    box-sizing: border-box;
     position: fixed;
-    top: 2rem;
+    top: 0;
     left: 50%;
-    width: 90%;
+    width: 100%;
     transform: translateX(-50%);
     background: rgb(var(--app-background-color));
+  }
+
+  kemet-alert > div {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  kemet-alert[status=error] * {
+    color: rgb(var(--kemet-color-error));
+  }
+
+  kemet-alert[status=success] * {
+    color: rgb(var(--kemet-color-success));
   }
 
   kemet-tabs {

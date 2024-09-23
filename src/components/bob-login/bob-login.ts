@@ -1,15 +1,13 @@
 import { LitElement, html } from 'lit';
 import { customElement, query, state } from 'lit/decorators.js';
 import userStore, { IUserStore } from '../../store/user';
-import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 import { switchRoute } from '../../shared/utilities';
-
-import KemetAlert from 'kemet-ui/dist/components/kemet-alert/kemet-alert';
 import KemetInput from 'kemet-ui/dist/components/kemet-input/kemet-input';
-
+import alertStore, { IAlertStore } from '../../store/alert';
 import styles from './styles';
 import sharedStyles from '../../shared/styles';
 import KemetButton from 'kemet-ui/dist/components/kemet-button/kemet-button';
+import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 
 interface ICredentials {
   username: string;
@@ -26,7 +24,7 @@ export class BobLogin extends LitElement {
   userState: IUserStore = userStore.getInitialState();
 
   @state()
-  alertMessage: string = '';
+  alertState: IAlertStore = alertStore.getInitialState();
 
   @state()
   forgotStatus: string = '';
@@ -57,9 +55,6 @@ export class BobLogin extends LitElement {
 
   @query('form[action*=jwt-auth] kemet-button')
   loginButton!: KemetButton;
-
-  @query('kemet-alert')
-  alert!: KemetAlert;
 
   render() {
     return html`
@@ -110,10 +105,6 @@ export class BobLogin extends LitElement {
           </kemet-tab-panel>
         </kemet-tabs>
       </kemet-card>
-      <kemet-alert closable>
-        <kemet-icon slot="icon" size="24" icon="exclamation-octagon"></kemet-icon>
-        <span>${unsafeHTML(this.alertMessage)}</span>
-      </kemet-alert>
     `
   }
 
@@ -142,9 +133,10 @@ export class BobLogin extends LitElement {
       .then(response => {
         // bad access
         if (response.data?.status === 403) {
-          this.alert.opened = true;
-          this.alert.status = 'error';
-          this.alertMessage = response.message;
+          this.alertState.setStatus('error');
+          this.alertState.setMessage(unsafeHTML(response.message));
+          this.alertState.setOpened(true);
+          this.alertState.setIcon('exclamation-circle');
         }
 
         // success
@@ -154,9 +146,10 @@ export class BobLogin extends LitElement {
         }
       })
       .catch(() => {
-        this.alert.opened = true;
-        this.alert.status = 'error';
-        this.alertMessage = 'There was an unknown problem while logging you in.';
+        this.alertState.setStatus('error');
+        this.alertState.setMessage('There was an unknown problem while logging you in.');
+        this.alertState.setOpened(true);
+        this.alertState.setIcon('exclamation-circle');
       });
   }
 
@@ -179,18 +172,19 @@ export class BobLogin extends LitElement {
     fetch(`${API_URL}/${endpoint}`, options)
       .then(response => response.json())
       .then((responseData) => {
-          this.alertMessage = 'An error was encountered while registering.';
+          this.alertState.setMessage('An error was encountered while registering.');
 
           if (responseData.status === 'error') {
             if (responseData.data.errors.existing_user_login) {
-              this.alertMessage = 'That username is already taken!';
+              this.alertState.setMessage('That username is already taken!');
             }
 
             if (responseData.data.errors.existing_user_email) {
-              this.alertMessage = 'Email is registered with another user!'
+              this.alertState.setMessage('Email is registered with another user!');
             }
 
-            this.alert.status = 'error';
+            this.alertState.setStatus('error');
+            this.alertState.setIcon('exclamation-circle');
           }
 
           if (responseData.status === 'ok') {
@@ -202,12 +196,13 @@ export class BobLogin extends LitElement {
             this.fetchLogin(credentials);
           }
 
-          this.alert.opened = true;
+          this.alertState.setOpened(true);
       })
       .catch(() => {
-        this.alert.opened = true;
-        this.alert.status = 'error';
-        this.alertMessage = 'There was an unknown problem while registering.';
+        this.alertState.setStatus('error');
+        this.alertState.setMessage('There was an unknown problem while registering.');
+        this.alertState.setOpened(true);
+        this.alertState.setIcon('exclamation-circle');
       });
   }
 
@@ -230,13 +225,13 @@ export class BobLogin extends LitElement {
     fetch(`${API_URL}/${endpoint}`, options)
       .then(response => response.json())
       .then((responseData) => {
-        console.log(responseData);
         if (responseData.data.status === 200) {
           this.forgotStatus = 'enter-code';
         } else {
-          this.alert.opened = true;
-          this.alert.status = "error";
-          this.alertMessage = responseData.message || 'An unknown problem has occurred.';
+          this.alertState.setStatus('error');
+          this.alertState.setMessage(unsafeHTML(responseData.message) || 'An unknown problem has occurred.');
+          this.alertState.setOpened(true);
+          this.alertState.setIcon('exclamation-circle');
         }
       });
   }
@@ -266,15 +261,17 @@ export class BobLogin extends LitElement {
             password: this.resetPassword
           }
 
-          this.alert.opened = true;
-          this.alert.status = "success";
-          this.alertMessage = responseData.message;
+          this.alertState.setStatus('success');
+          this.alertState.setMessage(unsafeHTML(responseData.message));
+          this.alertState.setOpened(true);
+          this.alertState.setIcon('check-circle');
 
           setTimeout(() => this.fetchLogin(credentials), 1000 * 3);
         } else {
-          this.alert.opened = true;
-          this.alert.status = "error";
-          this.alertMessage = responseData.message || 'An unknown problem has occurred.';
+          this.alertState.setStatus('error');
+          this.alertState.setMessage(unsafeHTML(responseData.message) || 'An unknown problem has occurred.');
+          this.alertState.setOpened(true);
+          this.alertState.setIcon('exclamation-circle');
 
           if (responseData.message.indexOf('You must request a new code.') > -1) {
             this.forgotStatus = 'resend';

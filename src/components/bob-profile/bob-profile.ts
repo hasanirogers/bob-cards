@@ -2,6 +2,7 @@ import { LitElement, html } from 'lit';
 import { customElement, query, state } from 'lit/decorators.js';
 import styles from './styles.ts';
 import userStore, { IUserStore } from '../../store/user.ts';
+import alertStore, { IAlertStore } from '../../store/alert.ts';
 import sharedStyles from '../../shared/styles';
 
 import * as FilePond from 'filepond';
@@ -15,6 +16,7 @@ import FilePondPluginImageTransform from 'filepond-plugin-image-transform';
 import FilePondStyles from 'filepond/dist/filepond.min.css';
 import FilePondImagePreviewStyles from 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css';
 import KemetInput from 'kemet-ui/dist/components/kemet-input/kemet-input';
+
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -36,6 +38,9 @@ export default class BobProfile extends LitElement {
   userState: IUserStore = userStore.getInitialState();
 
   @state()
+  alertState: IAlertStore = alertStore.getInitialState();
+
+  @state()
   filePond: any;
 
   @state()
@@ -52,6 +57,13 @@ export default class BobProfile extends LitElement {
 
   @query('.filepond--root')
   filePondRoot!: any;
+
+  constructor() {
+    super();
+    alertStore.subscribe((state) => {
+      this.alertState = state;
+    });
+  }
 
   updated(changedProperties: any) {
     if (changedProperties.has('showUploadProfileImage') && this.showUploadProfileImage) {
@@ -107,7 +119,7 @@ export default class BobProfile extends LitElement {
                 </p>
                 <p>
                   <kemet-field slug="new_password" label="New Password">
-                    <kemet-input slot="input" type="password" name="new_password" pattern="(?=.{8,}$)|(?=.*[a-z])(?=.*[A-Z])|(?=.*[0-9])" required validate-on-blur></kemet-input>
+                    <kemet-input slot="input" type="password" name="new_password" required validate-on-blur></kemet-input>
                     <kemet-password slot="component" message="Please make sure you meet all the requirements."></kemet-password>
                   </kemet-field>
                 </p>
@@ -275,12 +287,18 @@ export default class BobProfile extends LitElement {
       const confirmPasswordInput = this.changePasswordForm.querySelector('[name="confirm_password"]') as KemetInput;
 
       if (hasErrors) {
-        // TODO: Show error
+        this.alertState.setStatus('error');
+        this.alertState.setMessage('Please correct any errors in the fields.');
+        this.alertState.setOpened(true);
+        this.alertState.setIcon('exclamation-circle');
         return;
       }
 
-      if (newPasswordInput !== confirmPasswordInput) {
-        // TODO: Show error
+      if (newPasswordInput.value !== confirmPasswordInput.value) {
+        this.alertState.setStatus('error');
+        this.alertState.setMessage('Your passwords do not match.');
+        this.alertState.setOpened(true);
+        this.alertState.setIcon('exclamation-circle');
         return;
       }
 
@@ -299,6 +317,17 @@ export default class BobProfile extends LitElement {
 
       await fetch(`${API_URL}/wp-json/bob/v1/change-password`, options)
         .then((response) => response.json())
+        .then((responseData) => {
+          this.alertState.setStatus(responseData.status);
+          this.alertState.setMessage(responseData.message);
+          this.alertState.setOpened(true);
+
+          if (responseData.status === 'error') {
+            this.alertState.setIcon('exclamation-circle');
+          } else {
+            this.alertState.setIcon('check-circle');
+          }
+        })
         .catch((error) => console.error(error));
     }, 1);
   }

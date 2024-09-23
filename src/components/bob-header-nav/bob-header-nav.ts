@@ -16,7 +16,6 @@ export default class BobHeaderNav extends LitElement {
     super();
     userStore.subscribe((state) => {
       this.userState = state;
-      console.log(this.userState.profile);
     });
   }
 
@@ -29,7 +28,11 @@ export default class BobHeaderNav extends LitElement {
       return html`
         <section>
           <div>
-            Welcome ${this.userState.profile.first_name},
+            Welcome
+            ${this.userState.profile?.first_name
+              ? this.userState.profile.first_name
+              : this.userState.profile.username
+            },
             <br />
             <button variant="text" @click=${() => { this.userState.logout(); switchRoute('home'); }}>Log&nbsp;Out</button>
           </div>
