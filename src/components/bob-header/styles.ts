@@ -13,7 +13,6 @@ const styles = css`
     padding: 0 1rem;
   }
 
-  nav,
   header > div {
     display: flex;
     gap: 1rem;
@@ -45,6 +44,18 @@ const styles = css`
     max-width: 96px;
     width: 100%;
     height: auto;
+  }
+
+  nav {
+    display: none;
+  }
+
+  @media (min-width: 769px) {
+    nav {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
   }
 `;
 

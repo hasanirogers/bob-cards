@@ -5,6 +5,7 @@ import './index.scss';
 import './components/bob-app/bob-app';
 
 // kemet
+import 'kemet-ui/dist/components/kemet-drawer/kemet-drawer';
 import 'kemet-ui/dist/components/kemet-button/kemet-button';
 import 'kemet-ui/dist/components/kemet-card/kemet-card';
 import 'kemet-ui/dist/components/kemet-tabs/kemet-tab';

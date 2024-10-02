@@ -2,15 +2,21 @@ import { LitElement, html } from 'lit';
 import { customElement, query, state } from 'lit/decorators.js';
 import { Router } from '@vaadin/router';
 import alertStore, { IAlertStore } from '../../store/alert';
+import appStore, { IAppStore } from '../../store/app';
+import userStore, { IUserStore } from '../../store/user';
 import styles from './styles';
 import sharedStyles from '../../shared/styles';
 import routes from '../../routes';
+import nav from './nav';
+import KemetAlert from 'kemet-ui/dist/components/kemet-alert/kemet-alert';
 
 import '../bob-header/bob-header';
 import '../bob-home/bob-home';
 import '../bob-profile/bob-profile';
 import '../bob-login/bob-login';
-import KemetAlert from 'kemet-ui/dist/components/kemet-alert/kemet-alert';
+import '../bob-add/bob-add';
+import '../bob-mine/bob-mine';
+import { switchRoute } from '../../shared/utilities';
 
 export enum ENUM_ALERT_STATUS {
   SUCCESS = 'success',
@@ -27,6 +33,12 @@ export class BobApp extends LitElement {
   @state()
   alertState: IAlertStore = alertStore.getInitialState();
 
+  @state()
+  appState: IAppStore = appStore.getInitialState();
+
+  @state()
+  userState: IUserStore = userStore.getInitialState();
+
   @query('main')
   main!: HTMLElement;
 
@@ -35,9 +47,14 @@ export class BobApp extends LitElement {
 
   constructor() {
     super();
+
     alertStore.subscribe((state) => {
       this.alertState = state;
     });
+
+    appStore.subscribe((state) => {
+      this.appState = state;
+    })
   }
 
   firstUpdated() {
@@ -61,8 +78,27 @@ export class BobApp extends LitElement {
           <div>${message}</div>
         </div>
       </kemet-alert>
-      <bob-header></bob-header>
-      <main></main>
+      <kemet-drawer overlay side="right" effect="push" ?opened=${this.appState.isDrawerOpened}>
+        <aside slot="navigation">
+          ${this.userState.isLoggedIn ? html`
+            <figure>
+              <img src=${this.userState.profile.meta.bob_profile_image} alt="Profile picture" style="max-width:100%; border-radius: 50%;" />
+              <figcaption>Hello ${this.userState.profile.username}.</figcaption>
+              <p><button @click=${() => this.userState.logout()}>Log Out</button>.</p>
+            </figure>
+            <nav>${nav}</nav>
+          ` : html`
+            <figure>
+              <kemet-button variant="rounded" @click=${() => switchRoute('login', 'Login')}>Login</kemet-button>
+            </figure>
+          `}
+        </aside>
+        <section slot="content">
+          <bob-header></bob-header>
+          <main></main>
+        </section>
+      </kemet-drawer>
+
     `
   }
 

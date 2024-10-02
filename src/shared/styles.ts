@@ -35,13 +35,19 @@ export default css`
   }
 
   kemet-alert {
+    pointer-events: none;
     box-sizing: border-box;
     position: fixed;
     top: 0;
     left: 50%;
+    z-index: 9999;
     width: 100%;
     transform: translateX(-50%);
     background: rgb(var(--app-background-color));
+  }
+
+  kemet-alert[opened] {
+    pointer-events: auto;
   }
 
   kemet-alert > div {
@@ -77,6 +83,10 @@ export default css`
 
   ::part(input) {
     outline-offset: 6px;
+  }
+
+  ::part(input):-internal-autofill-selected {
+    background-color: red !important;
   }
 
   .profile-picture {

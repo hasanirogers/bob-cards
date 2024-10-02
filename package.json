@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@lit/task": "^1.0.1",
     "@vaadin/router": "^1.7.5",
     "filepond": "^4.31.3",
     "filepond-plugin-file-encode": "^2.1.14",
