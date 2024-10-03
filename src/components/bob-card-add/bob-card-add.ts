@@ -5,18 +5,12 @@ import userStore, { IUserStore } from '../../store/user';
 import alertStore, { IAlertStore } from '../../store/alert';
 import sharedStyles from '../../shared/styles';
 import styles from './styles';
+import { emitEvent } from '../../shared/utilities';
+
+import '../bob-loader/bob-loader';
 
 const API_URL = import.meta.env.VITE_API_URL;
 const FOUR_SQUARE_KEY = import.meta.env.VITE_FOUR_SQUARE_KEY;
-
-// export interface IFourSquarePhoto {
-//   id: string;
-//   created_at: string;
-//   prefix: string;
-//   suffix: string;
-//   width: number;
-//   height: number;
-// }
 
 @customElement('bob-card-add')
 export default class BobCardAdd extends LitElement {
@@ -30,9 +24,6 @@ export default class BobCardAdd extends LitElement {
 
   @property({ type: String })
   address!: string;
-
-  // @property({ type: Object })
-  // photo: IFourSquarePhoto | null = null;
 
   @state()
   userState: IUserStore = userStore.getInitialState();
@@ -67,19 +58,24 @@ export default class BobCardAdd extends LitElement {
   render() {
     return html`
       ${this.getBusinessPhotos.render({
-        pending: () => html`...loading`,
+        pending: () => html`<bob-loader loading></bob-loader>`,
         complete: (photos) => {
+          emitEvent(document.documentElement, 'photo-fetch-attempted');
+
           if (photos[0]?.prefix && photos[0]?.suffix) {
              return html`<img src="${photos[0]?.prefix}512x512${photos[0]?.suffix}" title=${this.name} />`;
           }
+
           return null;
         },
-        error: () => console.log('There was an error fetching the photos'),
+        error: () => emitEvent(document.documentElement, 'photo-fetch-attempted'),
       })}
       <section>
-        <kemet-button outlined @click=${() => this.addBusiness()}>
-          <kemet-icon icon="plus-circle" size="32"></kemet-icon>
-        </kemet-button>
+        <div>
+          <kemet-button outlined @click=${() => this.addBusiness()}>
+            <kemet-icon icon="plus-circle" size="32"></kemet-icon>
+          </kemet-button>
+        </div>
         <div>
           <h3>${this.name}</h3>
           <p>${this.address}</p>
@@ -135,8 +131,6 @@ export default class BobCardAdd extends LitElement {
     const business = await fetch(`${API_URL}/${endpoint}?meta_key=bob_fsq_id&meta_value=${this.fsqId}`)
       .then(response => response.json())
       .catch(error => console.log(error));
-
-    console.log(business);
 
     if (business?.status === 'error') {
       return true

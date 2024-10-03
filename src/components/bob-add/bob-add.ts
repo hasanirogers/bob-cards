@@ -1,11 +1,14 @@
 import { LitElement, html } from 'lit';
 import { customElement, query, state } from 'lit/decorators.js';
 import userStore, { IUserStore } from '../../store/user';
+import Shuffle from 'shufflejs';
 import styles from './styles';
 import sharedStyles from '../../shared/styles';
 import KemetInput from 'kemet-ui/dist/components/kemet-input/kemet-input';
 
 import '../bob-card-add/bob-card-add';
+import '../bob-loader/bob-loader';
+import BobLoader from '../bob-loader/bob-loader';
 
 // const API_URL = import.meta.env.VITE_API_URL;
 const FOUR_SQUARE_KEY = import.meta.env.VITE_FOUR_SQUARE_KEY;
@@ -20,11 +23,37 @@ export default class BobAdd extends LitElement {
   @state()
   businesses: any = {};
 
+  @state()
+  maxNumberOfBusinesses: number = 0;
+
+  @state()
+  currentNumberOfBusinesses: number = 0;
+
   @query('[name="search"]')
   searchInput!: KemetInput;
 
   @query('[name="zipcode"]')
   zipCodeInput!: KemetInput;
+
+  @query('bob-loader')
+  loader!: BobLoader;
+
+  @query('section ul')
+  shuffleGrid!: HTMLElement;
+
+  constructor() {
+    super();
+
+    document.addEventListener('photo-fetch-attempted', () => {
+      this.currentNumberOfBusinesses = this.currentNumberOfBusinesses + 1;
+    })
+  }
+
+  updated(changedProperties: Map<string, unknown>) {
+    if (changedProperties.has('currentNumberOfBusinesses')) {
+      this.determineMaxNumberOfBusinessesReached();
+    }
+  }
 
   render() {
     return html`
@@ -54,6 +83,7 @@ export default class BobAdd extends LitElement {
         </fieldset>
       </form>
       <section>
+        <div><bob-loader></bob-loader></div>
         <ul>
           ${this.makeBusinesses()}
         </ul>
@@ -75,9 +105,13 @@ export default class BobAdd extends LitElement {
       const near = this.zipCodeInput.value ? `&near=${this.zipCodeInput.value}` : '';
 
       if (this.searchInput.value) {
+        this.loader.loading = true;
+
         this.businesses  = await fetch(`https://api.foursquare.com/v3/places/search?query=${this.searchInput.value}&limit=50${near}`, options)
           .then(response => response.json())
           .catch(error => console.error('Error:', error));
+
+        this.maxNumberOfBusinesses = this.businesses.results?.length;
       }
     } else {
       this.zipCodeInput.status = 'error';
@@ -97,6 +131,17 @@ export default class BobAdd extends LitElement {
       `;
     });
 
+  }
+
+  determineMaxNumberOfBusinessesReached() {
+    if (this.currentNumberOfBusinesses >= this.maxNumberOfBusinesses) {
+      this.loader.loading = false;
+      setTimeout(() => {
+        new Shuffle(this.shuffleGrid, {
+          itemSelector: 'section li',
+        })
+      }, 1);
+    }
   }
 }
 

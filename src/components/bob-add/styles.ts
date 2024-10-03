@@ -6,21 +6,33 @@ export default css`
   }
 
   ul {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 2rem;
-    margin: 2rem 0;
+    margin: 2rem -1rem;
     padding: 0;
     list-style: none;
+    min-height: 540px;
   }
 
   li {
-    display: flex;
+    width: 33%;
+  }
+
+  bob-card-add {
+    margin: 1rem;
   }
 
   fieldset {
     display: grid;
     gap: 1rem;
     grid-template-columns: 1fr 160px;
+  }
+
+  section > div {
+    display: none;
+    text-align: center;
+    margin: 1.5rem 0;
+  }
+
+  section > div:has(bob-loader[loading]) {
+    display: block;
   }
 `;
