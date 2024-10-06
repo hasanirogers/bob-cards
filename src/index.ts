@@ -16,3 +16,5 @@ import 'kemet-ui/dist/components/kemet-field/kemet-field';
 import 'kemet-ui/dist/components/kemet-password/kemet-password';
 import 'kemet-ui/dist/components/kemet-alert/kemet-alert';
 import 'kemet-ui/dist/components/kemet-avatar/kemet-avatar';
+import 'kemet-ui/dist/components/kemet-modal/kemet-modal';
+import 'kemet-ui/dist/components/kemet-modal/kemet-modal-close';

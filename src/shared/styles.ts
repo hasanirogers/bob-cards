@@ -1,6 +1,10 @@
 import { css } from 'lit';
 
 export default css`
+  :host([hidden]) {
+    display: none;
+  }
+
   button {
     cursor: pointer;
     color: inherit;
@@ -14,6 +18,22 @@ export default css`
   fieldset {
     border: none;
     padding: 0;
+  }
+
+  h2 {
+    font-size: 2rem;
+    font-weight: 400;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: var(--app-border);
+  }
+
+  h3 {
+    font-size: 1.75rem;
+    font-weight: 400;
   }
 
   legend {
@@ -87,6 +107,14 @@ export default css`
 
   ::part(input):-internal-autofill-selected {
     background-color: red !important;
+  }
+
+  ::part(overlay) {
+    width: 1000vw;
+    height: 1000vh;
+    left: -100vw;
+    top: -100vh;
+    background: rgb(var(--kemet-color-black) / 40%);
   }
 
   .profile-picture {
