@@ -11,6 +11,8 @@ jobs:
       - uses: actions/setup-node@v4
       - name: Build Site
         working-directory: ./
+        env:
+          VITE_FOUR_SQUARE_KEY: ${{ secrets.FOUR_SQUARE_KEY }}
         run: |
           npm install
           npm run build
@@ -24,5 +26,3 @@ jobs:
           remote_path: "./sites/bob/"
           sftp_only: true
           password: ${{ secrets.FTP_DEPLOY_PASSWORD }}
-        env:
-          VITE_FOUR_SQUARE_KEY: ${{ secrets.FOUR_SQUARE_KEY }}
