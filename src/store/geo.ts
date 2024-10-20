@@ -1,5 +1,5 @@
 import { createJSONStorage, persist } from 'zustand/middleware';
-import { createStore } from 'zustand/vanilla';
+import { create } from 'zustand';
 
 export interface ICoords {
   lat: number | null;
@@ -8,11 +8,12 @@ export interface ICoords {
 
 export interface IGeoStore {
   coords: ICoords | null;
+  address: any;
 }
 
-const store = createStore(
-  persist(
-    (set, get) => ({
+const store = create(
+  persist<IGeoStore>(
+    () => ({
       coords: null,
       address: null,
     }),

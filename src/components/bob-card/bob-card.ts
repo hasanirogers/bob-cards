@@ -3,8 +3,8 @@ import { customElement, property, query, state } from 'lit/decorators.js';
 import { Task } from '@lit/task';
 import userStore, { IUserStore } from '../../store/user';
 import alertStore, { IAlertStore } from '../../store/alert';
-import geoStore, { IGeoStore } from '../../store/geo';
-import { emitEvent, setGeoLocation } from '../../shared/utilities';
+import geoStore from '../../store/geo';
+import { emitEvent } from '../../shared/utilities';
 import sharedStyles from '../../shared/styles';
 import styles from './styles';
 

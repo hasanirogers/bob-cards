@@ -6,4 +6,7 @@ export default defineConfig({
     // your global and rel="stylesheet" styles must be excluded
     exclude: './src/index.scss'
   })],
+  build: {
+    target: 'esnext'
+  }
 });

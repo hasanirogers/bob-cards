@@ -4,7 +4,6 @@ import { Router } from '@vaadin/router';
 import alertStore, { IAlertStore } from '../../store/alert';
 import appStore, { IAppStore } from '../../store/app';
 import userStore, { IUserStore } from '../../store/user';
-import geoStore, { IGeoStore } from '../../store/geo';
 import { setGeoLocation, switchRoute } from '../../shared/utilities';
 import styles from './styles';
 import sharedStyles from '../../shared/styles';
@@ -40,9 +39,6 @@ export class BobApp extends LitElement {
 
   @state()
   userState: IUserStore = userStore.getInitialState();
-
-  // @state()
-  // geoState: IGeoStore = geoStore.getInitialState();
 
   @query('main')
   main!: HTMLElement;
