@@ -3,13 +3,13 @@ import { customElement, property, query, state } from 'lit/decorators.js';
 import { Task } from '@lit/task';
 import userStore, { IUserStore } from '../../store/user';
 import alertStore, { IAlertStore } from '../../store/alert';
+import geoStore, { IGeoStore } from '../../store/geo';
+import { emitEvent, setGeoLocation } from '../../shared/utilities';
 import sharedStyles from '../../shared/styles';
 import styles from './styles';
-import { emitEvent } from '../../shared/utilities';
 
-import '../bob-loader/bob-loader';
 import KemetModal from 'kemet-ui/dist/components/kemet-modal/kemet-modal';
-import BobCards from '../bob-cards/bob-cards';
+import '../bob-loader/bob-loader';
 
 const API_URL = import.meta.env.VITE_API_URL;
 const FOUR_SQUARE_KEY = import.meta.env.VITE_FOUR_SQUARE_KEY;
@@ -39,8 +39,18 @@ export default class BobCard extends LitElement {
   @state()
   alertState: IAlertStore = alertStore.getInitialState();
 
+  @state()
+  geoState: any = geoStore.getState();
+
   @query('kemet-modal')
   modal!: KemetModal;
+
+  constructor() {
+    super();
+    geoStore.subscribe((state) => {
+      this.geoState = state;
+    })
+  }
 
   private getBusinessPhotos = new Task(this, {
     task: async ([details]) => {
@@ -90,8 +100,44 @@ export default class BobCard extends LitElement {
         error: () => emitEvent(document.documentElement, 'photo-fetch-attempted'),
       })}
       <section>
-          <p>${this.details.tel}</p>
-          <p>${this.details.location.formatted_address}</p>
+        <div class="cta">
+          <div class="phone">
+            ${this.details.tel && html`
+              <span>
+                <kemet-button outlined variant="rounded" link="tel:${this.details.tel.replace(/\D/g, '')}">Call Business</kemet-button>
+              </span>
+              <span>${this.details.tel}</span>
+            `}
+          </div>
+          <div class="links">
+            <nav class="social">
+              ${this.details.social_media.facebook_id && html`
+                <a href=${`https://facebook.com/${this.details.social_media.facebook_id}`} target="_blank">
+                  <kemet-icon icon="facebook" size="24"></kemet-icon>
+                </a>
+              `}
+              ${this.details.social_media.instagram && html`
+                <a href=${`https://instagram.com/${this.details.social_media.instagram}`} target="_blank">
+                  <kemet-icon icon="instagram" size="24"></kemet-icon>
+                </a>
+              `}
+              ${this.details.social_media.twitter && html`
+                <a href=${`https://x.com/${this.details.social_media.twitter}`} target="_blank">
+                  <kemet-icon icon="twitter-x" size="24"></kemet-icon>
+                </a>
+              `}
+            </nav>
+            ${this.geoState.coords && html`
+              <span>
+                <kemet-button outlined variant="circle" link=${`https://www.google.com/maps/dir/${this.geoState.coords.lat},${this.geoState.coords.lng}/${this.details.location.formatted_address},17z`} target="_blank">
+                  <kemet-icon icon="car-front-fill" size="24"></kemet-icon>
+                </kemet-button>
+              </span>
+            `}
+          </div>
+
+        </div>
+        <p>${this.details.location.formatted_address}</p>
       </section>
       <kemet-modal effect="fall" rounded>
         <kemet-modal-close role="button" aria-label="Close Button">

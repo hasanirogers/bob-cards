@@ -1,9 +1,11 @@
 import { LitElement, html } from 'lit';
 import { customElement, property, query, state } from 'lit/decorators.js';
 import userStore, { IUserStore } from '../../store/user';
+import filterStore, { IFilterStore } from '../../store/filters';
 import Shuffle from 'shufflejs';
 import styles from './styles';
 import '../bob-card/bob-card';
+import { abbreviateState } from '../../shared/utilities';
 
 const API_URL = import.meta.env.VITE_API_URL;
 const FOUR_SQUARE_KEY = import.meta.env.VITE_FOUR_SQUARE_KEY;
@@ -40,21 +42,33 @@ export default class BobCards extends LitElement {
   currentPage: number = 1;
 
   @state()
-  totalPages: number = 0;
+  totalPages: number = 1;
 
   @query('ul')
   shuffleGrid!: HTMLElement;
 
-    constructor() {
-      super();
-      document.addEventListener('photo-fetch-attempted', () => {
-        this.currentNumberOfBusinesses = this.currentNumberOfBusinesses + 1;
-      });
-    }
+  @state()
+  filterState: IFilterStore = filterStore.getInitialState();
+
+  constructor() {
+    super();
+
+    document.addEventListener('photo-fetch-attempted', () => {
+      this.currentNumberOfBusinesses = this.currentNumberOfBusinesses + 1;
+    });
+
+    filterStore.subscribe((state) => {
+      this.filterState = state;
+      this.filterUniqueBusinesses();
+    });
+  }
 
   firstUpdated() {
     this.getBusinesses();
-     window.addEventListener('scroll', () => this.handleScroll());
+    window.addEventListener('scroll', () => this.handleScroll());
+    this.shuffleInstance = new Shuffle(this.shuffleGrid, {
+      itemSelector: 'li',
+    });
   }
 
   updated(changedProperties: Map<string, unknown>) {
@@ -62,21 +76,28 @@ export default class BobCards extends LitElement {
       this.filterUniqueBusinesses();
     }
 
-    if (changedProperties.has('currentNumberOfBusinesses')) {
-      this.determineMaxNumberOfBusinessesReached();
+    // update shuffle display with new filtered data
+    if (changedProperties.has('businessDataFiltered')) {
+      setTimeout(() => {
+        this.shuffleInstance.resetItems();
+      }, 500);
     }
   }
 
   render() {
-    return this.businessDataFiltered?.length > 0 ? this.makeBobCards() : html`<div><bob-loader loading></bob-loader></div>`;
+    return html`
+      ${this.businessDataFiltered?.length > 0 ? '' : html`<div><bob-loader loading></bob-loader></div>`}
+      <ul>${this.makeBobCards()}</ul>
+    `;
   }
 
   async getBusinesses() {
-    const queryParams = `per_page=10&page=${this.currentPage}&author=${this.userState.user.user_id}`;
+    const author = this.mine ? `&author=${this.userState.user.user_id}` : '';
+    const queryParams = `per_page=10&page=${this.currentPage}${author}`;
 
     this.businesses = await fetch(`${API_URL}/wp-json/wp/v2/business?${queryParams}`)
       .then((response) => {
-        this.totalPages = parseInt(response.headers.get('x-wp-totalpages') || '0');
+        this.totalPages = parseInt(response.headers.get('x-wp-totalpages') || '1');
         return response.json()
       })
       .catch((error) => console.log(error));
@@ -113,6 +134,7 @@ export default class BobCards extends LitElement {
       'social_media',
       'rating',
       'price',
+      'link',
     ];
 
     return await fetch(`https://api.foursquare.com/v3/places/${fsq_id}?fields=${fields.join(',')}`, options)
@@ -123,46 +145,42 @@ export default class BobCards extends LitElement {
   makeBobCards() {
     if (this.businessDataFiltered?.length > 0) {
       return html`
-        <ul>
-          ${this.businessDataFiltered.map((business: any) => html`
-            <li>
-              <bob-card
-                .details=${business.details}
-                .post=${business.post}
-                .mine=${this.mine}
-                .shuffle=${this.shuffleInstance}>
-              </bob-card>
-            </li>
-          `)}
-        </ul>
-      `
+        ${this.businessDataFiltered.map((business: any) => html`
+          <li>
+            <bob-card
+              .details=${business.details}
+              .post=${business.post}
+              .mine=${this.mine}
+              .shuffle=${this.shuffleInstance}>
+            </bob-card>
+          </li>
+        `)}
+      `;
     }
 
-    return html`<p>You haven't added any businesses yet.</p>`;
+    return this.mine
+      ? html`<li><p>You haven't added any businesses yet.</p></li>`
+      : html`<li><p>There are no businesses available.</p></li>`
   }
 
   filterUniqueBusinesses() {
     const uniqueIDs = new Set(this.businessData.map((business: any) => business.details.fsq_id));
-      this.businessDataFiltered = this.businessData.filter((business: any) => {
-        if (uniqueIDs.has(business.details.fsq_id)) {
-          uniqueIDs.delete(business.details.fsq_id);
-          return true;
-        }
-        return false
-      });
-  }
+    this.businessDataFiltered = this.businessData.filter((business: any) => {
+      if (!this.filterState.zipCodes.includes(business.details.location.postcode) && this.filterState.nearby) {
+        return false;
+      }
 
-  determineMaxNumberOfBusinessesReached() {
-    if (this.currentNumberOfBusinesses >= this.maxNumberOfBusinesses) {
-      // this.loader.loading = false;
-      setTimeout(() => {
-        if (this.shuffleGrid) {
-          this.shuffleInstance = new Shuffle(this.shuffleGrid, {
-            itemSelector: 'li',
-          });
-        }
-      }, 1);
-    }
+      if (business.details.location.region !== abbreviateState(this.filterState.region) && this.filterState.onlyInState) {
+        return false;
+      }
+
+      if (uniqueIDs.has(business.details.fsq_id)) {
+        uniqueIDs.delete(business.details.fsq_id);
+        return true;
+      }
+
+      return false;
+    });
   }
 
   handleScroll() {

@@ -23,8 +23,13 @@ export default class BobHeader extends LitElement {
 
    constructor() {
     super();
+
     appStore.subscribe((state) => {
       this.appState = state;
+    });
+
+    userStore.subscribe((state) => {
+      this.userState = state;
     });
   }
 

@@ -54,6 +54,12 @@ export default css`
     display: none;
   }
 
+  kemet-toggle {
+    --kemet-toggle-track-shadow: none;
+    --kemet-toggle-track-color: transparent;
+    --kemet-toggle-track-border: var(--app-border);
+  }
+
   kemet-alert {
     pointer-events: none;
     box-sizing: border-box;
@@ -61,7 +67,8 @@ export default css`
     top: 0;
     left: 50%;
     z-index: 9999;
-    width: 100%;
+    width: 96%;
+    margin-top: 2%;
     transform: translateX(-50%);
     background: rgb(var(--app-background-color));
   }

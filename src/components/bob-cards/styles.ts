@@ -14,7 +14,7 @@ export default css`
   }
 
   li {
-    width: 33%;
+    width: 100%;
   }
 
   bob-card {
@@ -23,5 +23,11 @@ export default css`
 
   .shuffle {
     overflow: visible !important;
+  }
+
+  @media screen and (min-width: 769px) {
+    li {
+      width: 33%;
+    }
   }
 `;

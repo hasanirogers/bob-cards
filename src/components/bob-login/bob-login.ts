@@ -130,7 +130,7 @@ export class BobLogin extends LitElement {
 
     fetch(`${API_URL}/${endpoint}`, options)
       .then(response => response.json())
-      .then(response => {
+      .then(async response => {
         // bad access
         if (response.data?.status === 403) {
           this.alertState.setStatus('error');
@@ -141,6 +141,15 @@ export class BobLogin extends LitElement {
 
         // success
         if (response.token) {
+          const options = {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${response.token}`
+            }
+          };
+          const userProfile = await fetch(`${API_URL}/wp-json/wp/v2/users/${response.user_id.toString()}?context=edit`, options).then((response) => response.json());
+          this.userState.updateProfile(userProfile);
           this.userState.login(response);
           switchRoute('/mine');
         }

@@ -107,8 +107,15 @@ export default class BobCardAdd extends LitElement {
       const endpoint = 'wp-json/wp/v2/business';
 
       await fetch(`${API_URL}/${endpoint}`, options)
-        .then(response => response.json())
-        .then(() => {
+        .then((response) => {
+          if (!response.ok) {
+            this.alertState.setStatus('error');
+            this.alertState.setMessage('There was an error adding the business.');
+            this.alertState.setOpened(true);
+            this.alertState.setIcon('exclamation-circle');
+            return;
+          }
+
           this.alertState.setStatus('success');
           this.alertState.setMessage('Business added successfully!');
           this.alertState.setOpened(true);

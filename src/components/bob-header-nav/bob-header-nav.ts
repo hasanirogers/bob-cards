@@ -24,7 +24,8 @@ export default class BobHeaderNav extends LitElement {
   }
 
   makeNav() {
-    if (this.userState.isLoggedIn) {
+    console.log(this.userState.profile);
+    if (this.userState.isLoggedIn && this.userState.profile) {
       return html`
         <section>
           <div>
@@ -34,7 +35,7 @@ export default class BobHeaderNav extends LitElement {
               : this.userState.profile.username
             },
             <br />
-            <button variant="text" @click=${() => { this.userState.logout(); switchRoute('home'); }}>Log&nbsp;Out</button>
+            <button variant="text" @click=${() => this.handleLogout()}>Log&nbsp;Out</button>
           </div>
           <button @click=${() => switchRoute('profile', 'BobCards | Profile')}>
             ${
@@ -50,6 +51,11 @@ export default class BobHeaderNav extends LitElement {
         <kemet-button @click=${() => switchRoute('login', 'BobCards | Login')} variant="text">Login</kemet-button>
       `;
     }
+  }
+
+  handleLogout() {
+    this.userState.logout();
+    switchRoute('home');
   }
 }
 

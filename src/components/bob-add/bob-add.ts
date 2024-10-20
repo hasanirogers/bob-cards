@@ -4,13 +4,12 @@ import userStore, { IUserStore } from '../../store/user';
 import Shuffle from 'shufflejs';
 import styles from './styles';
 import sharedStyles from '../../shared/styles';
-import KemetInput from 'kemet-ui/dist/components/kemet-input/kemet-input';
 
+import KemetInput from 'kemet-ui/dist/components/kemet-input/kemet-input';
 import '../bob-card-add/bob-card-add';
 import '../bob-loader/bob-loader';
 import BobLoader from '../bob-loader/bob-loader';
 
-// const API_URL = import.meta.env.VITE_API_URL;
 const FOUR_SQUARE_KEY = import.meta.env.VITE_FOUR_SQUARE_KEY;
 
 @customElement('bob-add')

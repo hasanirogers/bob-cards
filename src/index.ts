@@ -18,3 +18,4 @@ import 'kemet-ui/dist/components/kemet-alert/kemet-alert';
 import 'kemet-ui/dist/components/kemet-avatar/kemet-avatar';
 import 'kemet-ui/dist/components/kemet-modal/kemet-modal';
 import 'kemet-ui/dist/components/kemet-modal/kemet-modal-close';
+import 'kemet-ui/dist/components/kemet-toggle/kemet-toggle';
