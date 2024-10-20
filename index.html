@@ -1,102 +1,16 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="keywords" content="Black Owned Business, Black Business, Black Business Directory, Business, Businesses, Black">
-  <meta name="author" content="Hasani Rogers">
-  <meta name="Description" content="The best directory of black owned businesses.">
-  <base href="/">
-
-  <!-- Add to homescreen for Chrome on Android. Fallback for manifest.json -->
-  <meta name="theme-color" content="#1e1e1e"/>
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="application-name" content="Bob App">
-
-  <!-- Add to homescreen for Safari on iOS -->
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Bob App">
-
-  <!-- Homescreen icons -->
-  <link rel="apple-touch-icon" href="images/manifest/icon-48x48.png">
-  <link rel="apple-touch-icon" sizes="72x72" href="images/manifest/icon-72x72.png">
-  <link rel="apple-touch-icon" sizes="96x96" href="images/manifest/icon-96x96.png">
-  <link rel="apple-touch-icon" sizes="144x144" href="images/manifest/icon-144x144.png">
-  <link rel="apple-touch-icon" sizes="192x192" href="images/manifest/icon-192x192.png">
-
-  <!-- Tile icon for Windows 8 (144x144 + tile color) -->
-  <meta name="msapplication-TileImage" content="images/manifest/icon-144x144.png">
-  <meta name="msapplication-TileColor" content="#1e1e1e">
-  <meta name="msapplication-tap-highlight" content="no">
-
-  <link rel="manifest" href="/manifest.json">
-  <link href="https://fonts.googleapis.com/css?family=Lato&display=swap" rel="stylesheet">
-  <style>
-    html, body {
-      /* bob colors */
-      --bob-primary-background-color: #1e1e1e;
-      --bob-primary-text-color: #858585;
-      --bob-primary-color: #0079cc;
-      --bob-divider-color: #404040;
-      --bob-dark-gray: #333333;
-      --bob-white: #f8f8f8;
-      --bob-error: #dd2c00;
-      --bob-success: #2cdd00;
-
-      /* bob misc */
-      --bob-page-max-width: 1280px;
-
-      /* material theme overwrites */
-      --primary-text-color: var(--bob-primary-text-color);
-      --primary-background-color: var(--bob-primary-background-color);
-      --primary-color: var(--bob-primary-color);
-      --divider-color: var(--bob-divider-color);
-
-      /* vaadin theme overwrites */
-      --lumo-font-family: 'Lato', sans-serif;
-      --lumo-primary-color: var(--bob-primary-color);
-      --lumo-primary-text-color: var(--bob-primary-text-color);
-      --lumo-secondary-text-color: var(--bob-primary-text-color);
-      --lumo-body-text-color: var(--bob-primary-text-color);
-
-      --lumo-contrast-20pct: rgba(255,255,255, .20);
-      --lumo-contrast-10pct: rgba(255,255,255, .10);
-
-
-      /* material colors */
-      --secondary-text-color: var(--light-theme-secondary-color);
-      --disabled-text-color: var(--light-theme-disabled-color);
-      --error-color: var(--paper-deep-orange-a700);
-      --light-primary-color: var(--paper-indigo-100);
-      --dark-primary-color: var(--paper-indigo-700);
-      --accent-color: var(--paper-pink-a200);
-      --light-accent-color: var(--paper-pink-a100);
-      --dark-accent-color: var(--paper-pink-a400);
-
-      margin: 0;
-      padding: 0;
-      color: var(--bob-primary-text-color);
-      font-family: 'Lato', sans-serif;
-      min-height: 100vh;
-      background-color: var(--bob-primary-background-color);
-    }
-  </style>
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js');
-      });
-    }
-  </script>
-  <title>Black Owned Business Cards</title>
-</head>
-<body>
-  <bob-app></bob-app>
-  <noscript>
-    Sorry bruh. You need JavaScript to view this app.
-  </noscript>
-  <script type="module" src="./packages/bob-app/bob-app.js"></script>
-</body>
-
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/handshake.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BobCards</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <script type="module" src="/src/index.ts"></script>
+  </head>
+  <body>
+    <bob-app></bob-app>
+  </body>
 </html>

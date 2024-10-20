@@ -1,0 +1,26 @@
+name: deploy
+on:
+  push:
+    branches:
+      - main
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+      - name: Build Site
+        working-directory: ./
+        run: |
+          npm install
+          npm run build
+      - name: Deploy
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
+        with:
+          username: ${{ secrets.FTP_DEPLOY_USERNAME }}
+          server: ${{ secrets.FTP_DEPLOY_HOST }}
+          port: ${{ secrets.FTP_DEPLOY_PORT }}
+          local_path: "./dist/*"
+          remote_path: "./sites/bob/"
+          sftp_only: true
+          password: ${{ secrets.FTP_DEPLOY_PASSWORD }}

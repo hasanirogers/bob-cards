@@ -1,86 +1,35 @@
 {
+  "name": "bob-cards",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
   "scripts": {
-    "lint:eslint": "eslint --ext .js,.html . --ignore-path .gitignore",
-    "format:eslint": "eslint --ext .js,.html . --fix --ignore-path .gitignore",
-    "lint:prettier": "prettier \"**/*.js\" --check --ignore-path .gitignore",
-    "format:prettier": "prettier \"**/*.js\" --write --ignore-path .gitignore",
-    "lint": "npm run lint:eslint && npm run lint:prettier",
-    "format": "npm run format:eslint && npm run format:prettier",
-    "test": "karma start --coverage",
-    "test:watch": "karma start --auto-watch=true --single-run=false",
-    "test:update-snapshots": "karma start --update-snapshots",
-    "test:prune-snapshots": "karma start --prune-snapshots",
-    "test:compatibility": "karma start --compatibility all --coverage",
-    "test:compatibility:watch": "karma start --compatibility all --auto-watch=true --single-run=false",
-    "test:bs": "karma start karma.bs.config.js --compatibility all --coverage",
-    "site:build": "npm run storybook:build",
-    "storybook": "start-storybook -p 9001",
-    "storybook:build": "build-storybook -o _site -s storybook-static",
-    "start:build": "cd dist && es-dev-server --open",
-    "build": "webpack --mode production",
-    "start": "es-dev-server --app-index index.html --node-resolve --open --watch",
-    "start:express": "webpack --mode production && node server/bin/www",
-    "start:compatibility": "es-dev-server --app-index index.html --compatibility all --node-resolve --open --watch",
-    "start:production": "webpack --mode production && forever start server/bin/www"
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@lit/task": "^1.0.1",
+    "@vaadin/router": "^1.7.5",
+    "filepond": "^4.31.3",
+    "filepond-plugin-file-encode": "^2.1.14",
+    "filepond-plugin-file-validate-type": "^1.2.9",
+    "filepond-plugin-image-crop": "^2.0.6",
+    "filepond-plugin-image-exif-orientation": "^1.0.11",
+    "filepond-plugin-image-preview": "^4.6.12",
+    "filepond-plugin-image-resize": "^2.0.10",
+    "filepond-plugin-image-transform": "^3.8.7",
+    "js-cookie": "^3.0.5",
+    "kemet-ui": "^3.1.0",
+    "lit": "^3.2.0",
+    "sass": "^1.78.0",
+    "shufflejs": "^6.1.1",
+    "vite-plugin-lit-css": "^2.0.0",
+    "zustand": "^4.5.5"
   },
   "devDependencies": {
-    "@open-wc/eslint-config": "^1.0.0",
-    "@open-wc/prettier-config": "^0.1.10",
-    "husky": "^1.0.0",
-    "lint-staged": "^8.0.0",
-    "@open-wc/testing-karma": "^3.0.0",
-    "webpack-merge": "^4.1.5",
-    "@open-wc/testing-karma-bs": "^1.0.0",
-    "@open-wc/testing": "^0.11.1",
-    "@open-wc/demoing-storybook": "^0.3.0",
-    "@open-wc/building-webpack": "^2.1.0",
-    "webpack": "^4.28.0",
-    "webpack-cli": "^3.3.4",
-    "es-dev-server": "^1.5.0"
-  },
-  "eslintConfig": {
-    "extends": [
-      "@open-wc/eslint-config",
-      "eslint-config-prettier"
-    ]
-  },
-  "prettier": "@open-wc/prettier-config",
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
-  "lint-staged": {
-    "*.js": [
-      "eslint --fix",
-      "prettier --write",
-      "git add"
-    ]
-  },
-  "name": "bob-cards",
-  "version": "1.0.1",
-  "description": "Bobs are Black Owned Businesses",
-  "author": "Hasani Rogers <hasani.rogers@gmail.com>",
-  "license": "MIT",
-  "dependencies": {
-    "@polymer/paper-checkbox": "^3.1.0",
-    "@polymer/paper-dropdown-menu": "^3.0.1",
-    "@polymer/paper-input": "^3.0.2",
-    "@polymer/paper-item": "^3.0.1",
-    "@polymer/paper-listbox": "^3.0.1",
-    "@polymer/paper-toggle-button": "^3.0.1",
-    "@vaadin/router": "^1.2.1",
-    "@vaadin/vaadin-tabs": "^3.0.4",
-    "body-parser": "^1.19.0",
-    "cookie-parser": "^1.4.4",
-    "copy-webpack-plugin": "^5.0.4",
-    "express": "^4.17.1",
-    "lit-element": "^2.0.1",
-    "lit-html": "^1.0.0",
-    "multiselect-combo-box": "^2.0.3",
-    "pwa-helpers": "^0.9.1",
-    "shufflejs": "^5.2.2",
-    "workbox-webpack-plugin": "^4.3.1",
-    "zipcodes": "^8.0.0"
+    "@types/js-cookie": "^3.0.6",
+    "typescript": "^5.5.3",
+    "vite": "^5.4.1"
   }
 }
