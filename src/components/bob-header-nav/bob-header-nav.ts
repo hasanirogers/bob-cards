@@ -24,7 +24,6 @@ export default class BobHeaderNav extends LitElement {
   }
 
   makeNav() {
-    console.log(this.userState.profile);
     if (this.userState.isLoggedIn && this.userState.profile) {
       return html`
         <section>

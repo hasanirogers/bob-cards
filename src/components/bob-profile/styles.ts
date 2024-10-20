@@ -21,10 +21,7 @@ export default css`
   }
 
   .profile {
-    display: grid;
-    grid-template-columns: 1fr 1.25fr;
-    gap: 8vw;
-    align-items: center;
+    display: block;
     margin: 2vw 4vw;
     padding: 4vw;
     border: var(--app-border);
@@ -33,5 +30,14 @@ export default css`
   .profile-image {
     text-align: center;
     position: relative;
+  }
+
+  @media screen and (min-width: 769px) {
+    .profile {
+      display: grid;
+      gap: 8vw;
+      align-items: center;
+      grid-template-columns: 1fr 1fr;
+    }
   }
 `;

@@ -89,7 +89,9 @@ export class BobApp extends LitElement {
         <aside slot="navigation">
           ${this.userState.isLoggedIn ? html`
             <figure>
-              <img src=${this.userState.profile.meta.bob_profile_image} alt="Profile picture" style="max-width:100%; border-radius: 50%;" />
+              <button @click=${() => switchRoute('profile', 'BobCards | Profile')}>
+                <img src=${this.userState.profile.meta.bob_profile_image} alt="Profile picture" style="max-width:100%; border-radius: 50%;" />
+              </button>
               <figcaption>Hello ${this.userState.profile.username}.</figcaption>
               <p><button @click=${() => this.userState.logout()}>Log Out</button>.</p>
             </figure>

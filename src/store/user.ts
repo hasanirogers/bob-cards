@@ -16,7 +16,6 @@ const getProfile = async () => {
   const user = Cookies.get('bob-user') ? JSON.parse(Cookies.get('bob-user') || '') : undefined;
 
   if (!user) {
-    console.log('no user');
     return;
   }
 

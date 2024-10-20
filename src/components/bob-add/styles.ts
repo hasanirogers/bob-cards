@@ -13,7 +13,13 @@ export default css`
   }
 
   li {
-    width: 33%;
+    width: 100%;
+  }
+
+  @media screen and (min-width: 769px) {
+    li {
+      width: 33%;
+    }
   }
 
   bob-card-add {
