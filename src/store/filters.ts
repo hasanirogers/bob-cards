@@ -13,7 +13,7 @@ export interface IFilterStore {
 const geo = geoStore.getState() as any;
 
 const getZipCodes = async (zipCode: string | null): Promise<any> => {
-  const response = await fetch(`http://api.geonames.org/findNearbyPostalCodesJSON?postalcode=${zipCode}&country=USA&radius=30&username=zerodivide85`)
+  const response = await fetch(`https://secure.geonames.org/findNearbyPostalCodesJSON?postalcode=${zipCode}&country=USA&radius=30&username=zerodivide85`)
     .then((response) => response.json());
 
   const zipCodesArray: string[] = [];
