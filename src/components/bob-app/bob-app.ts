@@ -61,6 +61,10 @@ export class BobApp extends LitElement {
       this.appState = state;
     });
 
+    userStore.subscribe((state) => {
+      this.userState = state;
+    });
+
     setGeoLocation();
   }
 

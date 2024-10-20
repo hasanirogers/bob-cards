@@ -17,6 +17,11 @@ export default css`
     width: 100%;
   }
 
+  li > p,
+  div:has(bob-loader) {
+    text-align: center;
+  }
+
   bob-card {
     margin: 1rem;
   }
